@@ -1,0 +1,26 @@
+<inkscape-extension>
+
+  <name>Radical Pie Equation</name>
+  <id>nasos.inkradix</id>
+
+
+  <effect>
+  
+    <object-type> all </object-type>
+    
+    <effects-menu>
+    
+      <submenu name="Text"/>
+      
+    </effects-menu>
+    
+  </effect>
+
+
+  <script>
+  
+    <command location="inx" interpreter="python">InkRadix.py</command>
+    
+  </script>
+  
+</inkscape-extension>
