@@ -89,6 +89,25 @@ def ReadRegistryValue( root, subkey, valueName ):
         raise RuntimeError( f"Registry access error: {e}" )
         
     
+def FindRadicalPieExecutablePath( ):
+    
+    root                        = winreg.HKEY_CLASSES_ROOT
+    subkey                      = r"CLSID\{4EE860BB-53CE-44F3-BC6B-434146CAB233}\LocalServer32"
+    valueName                   = ""
+    registeredRadicalPieExePath = ReadRegistryValue( root, subkey, valueName );
+          
+    if registeredRadicalPieExePath:
+    
+        return registeredRadicalPieExePath;
+        
+        
+    if os.path.exists( defaultRadicalPieExePath ):
+
+        return defaultRadicalPieExePath;
+        
+    return None;
+        
+        
 class InkRadix( inkex.Effect ):
 
     def DebugMsg( self, msg):
@@ -96,26 +115,7 @@ class InkRadix( inkex.Effect ):
         if DEBUG:
         
             self.msg( msg )
-            
-            
-    def FindRadicalPieExecutablePath( self ):
-    
-        root                        = winreg.HKEY_CLASSES_ROOT
-        subkey                      = r"CLSID\{4EE860BB-53CE-44F3-BC6B-434146CAB233}\LocalServer32"
-        valueName                   = ""
-        registeredRadicalPieExePath = ReadRegistryValue( root, subkey, valueName );
-              
-        if registeredRadicalPieExePath:
-        
-            return registeredRadicalPieExePath;
-            
-            
-        if os.path.exists( defaultRadicalPieExePath ):
-
-            return defaultRadicalPieExePath;
-            
-        return None;
-            
+                        
             
     def IsRadicalPieObject( self, elem ):
 
@@ -249,9 +249,9 @@ class InkRadix( inkex.Effect ):
 
     def effect( self ):
 
-        radicalPieExePath = self.FindRadicalPieExecutablePath( )
+        radicalPieExePath = FindRadicalPieExecutablePath( )
 
-        if radicalPieExePath == None:
+        if radicalPieExePath is None:
 
             raise inkex.AbortExtension( "Radical Pie Executable not found. This Extensions needs an installation of the Radical Pie Equation Editor (https://radicalpie.com/)." )
 
