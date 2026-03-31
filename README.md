@@ -2,7 +2,7 @@
 InkRadix is an Inkscape extension that enables editable equations with [Radical Pie™](https://radicalpie.com/).
 
 # Installation
-To install, place the files InkRadix.inx and InkRadix.py inside the following user directory:
+To install, place the files ```InkRadix.inx``` and ```InkRadix.py``` inside the following user directory:
 
 ```%appdata%\inkscape\extensions```
 
