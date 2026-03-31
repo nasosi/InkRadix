@@ -44,10 +44,30 @@ defaultRadicalPieExePath = r"C:\Program Files\RadicalPie\RadicalPie.exe"
 def DecodeNumericEntities( text ):
 
     def repl( match ):
+    
+        value = match.group( 1 )
+        
+        try:
+            if value[0] in "xX":
+            
+                num = int( value[1:], 16 )
+                
+            else:
+            
+                num = int( value, 10 )
 
-        return chr( int( match.group( 1 ) ) )
 
-    return re.sub( r'&#(\d+);', repl, text )
+            if 0 <= num <= 0x10FFFF:
+            
+                return chr( num )
+
+        except ( ValueError, OverflowError ):
+        
+            pass
+
+        return match.group( 0 )
+
+    return re.sub( r"&#(x?[0-9A-Fa-f]+);", repl, text )
 
 
 def ReadRegistryValue( root, subkey, valueName ):
@@ -64,11 +84,11 @@ def ReadRegistryValue( root, subkey, valueName ):
         
         return None
     
-    except OsError as e:
+    except OSError as e:
         
         raise RuntimeError( f"Registry access error: {e}" )
         
-        
+    
 class InkRadix( inkex.Effect ):
 
     def DebugMsg( self, msg):
