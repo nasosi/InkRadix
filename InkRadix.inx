@@ -3,7 +3,6 @@
   <name>Radical Pie Equation</name>
   <id>nasos.inkradix</id>
 
-
   <effect>
   
     <object-type> all </object-type>
@@ -16,6 +15,7 @@
     
   </effect>
 
+  <menu-tip>Open Radical Pie Equation editor for selected objects</menu-tip>
 
   <script>
   
