@@ -13,7 +13,7 @@ The extension adds a menu entry under Extensions → Text → Radical Pie Equati
 
 - If the user has not selected any objects, the extension will launch Radical Pie, and upon closing and saving, it will insert a new equation into Inkscape.
 - If the user has selected an existing Radical Pie Equation, executing the command will open Radical Pie for editing the equation, and upon closing and saving, the selection will be updated with the modified content.
-- Avoid ungrouping the equation object, as this will make it no longer editable. If this happens accidentally, you can restore it using Undo
+- Avoid ungrouping the equation object, as this will make it no longer editable. If this happens accidentally, you can restore it using Undo.
 
 <div align="center">
 <p align="center">
