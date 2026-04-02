@@ -7,21 +7,26 @@
 InkRadix is an Inkscape extension that enables editable equations with [Radical Pie™](https://radicalpie.com/).
 
 # Installation
-Currently, there are two suggested options:
+Currently, there are three suggested options.
 
-## Option 1
-Execute the ```Install.bat``` script from the ```Resources``` folder.
+## Option 1: Installer script
+1. Download this repository by clicking ```Code``` → ```Download ZIP``` above. This will download a file named ```InkRadix-main.zip```.
+2. Extract it.
+3. Execute the ```Install.bat``` script from the ```Resources``` folder.
+4. (Re)start Inkscape to load the extension.
 
-## Option 2
-Place the files ```InkRadix.inx``` and ```InkRadix.py``` in the following user directory:
+## Option 2: Manual
+1. Download this repository by clicking ```Code``` → ```Download ZIP``` above. This will download a file named ```InkRadix-main.zip```.
+2. Place the files ```InkRadix.inx``` and ```InkRadix.py``` in the following user directory: ```%APPDATA%\inkscape\extensions``` You can copy and paste this path directly into the Windows File Explorer address bar. It will resolve to a folder similar to: ```C:\Users\<YourUsername>\AppData\Roaming\inkscape\extensions```
+3. (Re)start Inkscape to load the extension.
 
-```%APPDATA%\inkscape\extensions```
-
-You can copy and paste this path directly into the Windows File Explorer address bar. It will resolve to a folder similar to:
-
-C:\Users\<YourUsername>\AppData\Roaming\inkscape\extensions
-
-After copying the files, restart Inkscape to load the extension.
+## Option 3: From within Inkscape
+1. Download this repository by clicking ```Code``` → ```Download ZIP``` above. This will download a file named ```InkRadix-main.zip```.
+2. In Inkscape, select ```Extensions``` → ```Manage Extensions```
+3. In the Extensions window that appears, select the ```Install Packages``` tab.
+4. At the bottom of the window, select the folder icon.
+5. Navigate to the location where  ```InkRadix-main.zip``` was download it, select it and click ```Open``` at the bottom right of the window.
+6. Close the Extensions window and restart inkscape.
 
 # Usage
 The extension adds a menu entry under Extensions → Text → Radical Pie Equation.
