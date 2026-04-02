@@ -7,20 +7,29 @@
 InkRadix is an Inkscape extension that enables editable equations with [Radical Pie™](https://radicalpie.com/).
 
 # Installation
-Currently, there are three suggested options.
+There are several ways to install InkRadix:
 
-## Option 1: Installer script
+## Option 1: Easiest
+If you have Windows version 10 1803 or later, you can install easily with:
+1. Open a Command Prompt
+2. Execute the following command:
+```
+(if exist "%temp%\InkRadixInst" rmdir /s /q "%temp%\InkRadixInst") && md "%temp%\InkRadixInst" && curl -L -o "%temp%\InkRadixInst\main.zip" "https://github.com/nasosi/InkRadix/archive/refs/heads/main.zip" && powershell -Command "Expand-Archive -Path '%temp%\InkRadixInst\main.zip' -DestinationPath '%temp%\InkRadixInst' -Force" && cd /d "%temp%\InkRadixInst\InkRadix-main\Resources" && call Install.bat && cd /d "%temp%" && rmdir /s /q "%temp%\InkRadixInst"
+```
+3. (Re)start Inkscape to load the extension.
+4. 
+## Option 2: Installer script
 1. Download this repository by clicking ```Code``` → ```Download ZIP``` above. This will download a file named ```InkRadix-main.zip```.
 2. Extract it.
 3. Execute the ```Install.bat``` script from the ```Resources``` folder.
 4. (Re)start Inkscape to load the extension.
 
-## Option 2: Manual
+## Option 3: Manual
 1. Download this repository by clicking ```Code``` → ```Download ZIP``` above. This will download a file named ```InkRadix-main.zip```.
 2. Place the files ```InkRadix.inx``` and ```InkRadix.py``` in the following user directory: ```%APPDATA%\inkscape\extensions``` You can copy and paste this path directly into the Windows File Explorer address bar. It will resolve to a folder similar to: ```C:\Users\<YourUsername>\AppData\Roaming\inkscape\extensions```
 3. (Re)start Inkscape to load the extension.
 
-## Option 3: From within Inkscape
+## Option 4: From within Inkscape
 1. Download this repository by clicking ```Code``` → ```Download ZIP``` above. This will download a file named ```InkRadix-main.zip```.
 2. In Inkscape, select ```Extensions``` → ```Manage Extensions```
 3. In the Extensions window that appears, select the ```Install Packages``` tab.
