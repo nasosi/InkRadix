@@ -12,7 +12,7 @@ There are several ways to install InkRadix:
 ## Option 1: Easiest
 If you have Windows version 10 1803 or later (very likely), you can install easily with:
 1. Open a Command Prompt
-2. Execute the following command:
+2. Copy, paste and execute the following command:
 ```
 (if exist "%temp%\InkRadixInst" rmdir /s /q "%temp%\InkRadixInst") && md "%temp%\InkRadixInst" && curl -L -o "%temp%\InkRadixInst\main.zip" "https://github.com/nasosi/InkRadix/archive/refs/heads/main.zip" && powershell -Command "Expand-Archive -Path '%temp%\InkRadixInst\main.zip' -DestinationPath '%temp%\InkRadixInst' -Force" && cd /d "%temp%\InkRadixInst\InkRadix-main\Resources" && call Install.bat && cd /d "%temp%" && rmdir /s /q "%temp%\InkRadixInst"
 ```
