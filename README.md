@@ -17,7 +17,7 @@ If you have Windows version 10 1803 or later, you can install easily with:
 (if exist "%temp%\InkRadixInst" rmdir /s /q "%temp%\InkRadixInst") && md "%temp%\InkRadixInst" && curl -L -o "%temp%\InkRadixInst\main.zip" "https://github.com/nasosi/InkRadix/archive/refs/heads/main.zip" && powershell -Command "Expand-Archive -Path '%temp%\InkRadixInst\main.zip' -DestinationPath '%temp%\InkRadixInst' -Force" && cd /d "%temp%\InkRadixInst\InkRadix-main\Resources" && call Install.bat && cd /d "%temp%" && rmdir /s /q "%temp%\InkRadixInst"
 ```
 3. (Re)start Inkscape to load the extension.
-4. 
+   
 ## Option 2: Installer script
 1. Download this repository by clicking ```Code``` → ```Download ZIP``` above. This will download a file named ```InkRadix-main.zip```.
 2. Extract it.
