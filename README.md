@@ -19,18 +19,18 @@ If you have Windows version 10 1803 or later (very likely), you can install easi
 3. (Re)start Inkscape to load the extension.
    
 ## Option 2: Installer script
-1. Download this repository by clicking ```Code``` → ```Download ZIP``` above. This will download a file named ```InkRadix-main.zip```.
+1. Download this repository [here](https://github.com/nasosi/InkRadix/archive/refs/heads/main.zip).
 2. Extract it.
 3. Execute the ```Install.bat``` script from the ```Resources``` folder.
 4. (Re)start Inkscape to load the extension.
 
 ## Option 3: Manual
-1. Download this repository by clicking ```Code``` → ```Download ZIP``` above. This will download a file named ```InkRadix-main.zip```.
+1. Download this repository [here](https://github.com/nasosi/InkRadix/archive/refs/heads/main.zip).
 2. Place the files ```InkRadix.inx``` and ```InkRadix.py``` in the following user directory: ```%APPDATA%\inkscape\extensions``` You can copy and paste this path directly into the Windows File Explorer address bar. It will resolve to a folder similar to: ```C:\Users\<YourUsername>\AppData\Roaming\inkscape\extensions```
 3. (Re)start Inkscape to load the extension.
 
 ## Option 4: From within Inkscape
-1. Download this repository by clicking ```Code``` → ```Download ZIP``` above. This will download a file named ```InkRadix-main.zip```.
+1. Download this repository [here](https://github.com/nasosi/InkRadix/archive/refs/heads/main.zip).
 2. In Inkscape, select ```Extensions``` → ```Manage Extensions```
 3. In the Extensions window that appears, select the ```Install Packages``` tab.
 4. At the bottom of the window, select the folder icon.
