@@ -17,7 +17,7 @@ If you have Windows version 10 1803 or later, you can install easily with:
 (if exist "%temp%\InkRadixInst" rmdir /s /q "%temp%\InkRadixInst") && md "%temp%\InkRadixInst" && curl -L -o "%temp%\InkRadixInst\main.zip" "https://github.com/nasosi/InkRadix/archive/refs/heads/main.zip" && powershell -Command "Expand-Archive -Path '%temp%\InkRadixInst\main.zip' -DestinationPath '%temp%\InkRadixInst' -Force" && cd /d "%temp%\InkRadixInst\InkRadix-main\Resources" && call Install.bat && cd /d "%temp%" && rmdir /s /q "%temp%\InkRadixInst"
 ```
 3. (Re)start Inkscape to load the extension.
-4. 
+   
 ## Option 2: Installer script
 1. Download this repository by clicking ```Code``` → ```Download ZIP``` above. This will download a file named ```InkRadix-main.zip```.
 2. Extract it.
@@ -40,8 +40,8 @@ If you have Windows version 10 1803 or later, you can install easily with:
 # Usage
 The extension adds a menu entry under Extensions → Text → Radical Pie Equation.
 
-- If no objects are selected, the extension will launch Radical Pie. After closing and saving, **a new equation** will be inserted into Inkscape.
-- If an existing Radical Pie equation is selected, running the command will open it for editing. After closing and saving, the selected object will be **updated with the modified content**.
+- **Adding a new equation**: If no objects are selected, the extension will launch Radical Pie. After closing and saving, a new equation will be inserted into Inkscape.
+- **Editing an existing equation**: If an existing Radical Pie equation is selected, running the command will open it for editing. After closing and saving, the selected object will be updated with the modified content.
 - Avoid ungrouping the equation object in Inkscape, as this will make it no longer editable. If this happens accidentally, you can restore it using the Undo function.
 - You can **paste LaTeX** equations into Radical Pie, and they will be formatted automatically. You can then modify them graphically if needed.
 - If you want a **LaTeX-like appearance**, you can install the NewCM-Radix font collection (https://github.com/nasosi/NewCM-Radix
