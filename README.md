@@ -45,4 +45,4 @@ The extension adds a menu entry under Extensions → Text → Radical Pie Equati
 - You can **paste LaTeX** equations into Radical Pie, and they will be formatted automatically. You can then modify them graphically if needed.
 - If you want a **LaTeX-like appearance**, you can install the NewCM-Radix font collection (https://github.com/nasosi/NewCM-Radix
 ), which works seamlessly with Radical Pie.
-- Avoid ungrouping the equation object in Inkscape, as this will make it no longer editable. If this happens accidentally, you can restore it using the Undo function.
+- Avoid ungrouping the equation object in Inkscape, as this will make it no longer editable. If this happens by accident, you can restore it using the Undo function.
