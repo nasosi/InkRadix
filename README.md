@@ -38,7 +38,7 @@ If you have Windows version 10 1803 or later (very likely), you can install easi
 6. Close the Extensions window and restart inkscape.
 
 # Usage
-The extension adds a menu entry under Extensions → Text → Radical Pie Equation.
+The extension adds a menu entry under ```Extensions``` → ```Text``` → ```Radical Pie Equation```.
 
 - **Adding a new equation**: If no objects are selected, the extension will launch Radical Pie. After closing and saving, a new equation will be inserted into Inkscape.
 - **Editing an existing equation**: If an existing Radical Pie equation is selected, running the command will open it for editing. After closing and saving, the selected object will be updated with the modified content.
