@@ -42,11 +42,7 @@ The extension adds a menu entry under Extensions → Text → Radical Pie Equati
 
 - **Adding a new equation**: If no objects are selected, the extension will launch Radical Pie. After closing and saving, a new equation will be inserted into Inkscape.
 - **Editing an existing equation**: If an existing Radical Pie equation is selected, running the command will open it for editing. After closing and saving, the selected object will be updated with the modified content.
-- Avoid ungrouping the equation object in Inkscape, as this will make it no longer editable. If this happens accidentally, you can restore it using the Undo function.
 - You can **paste LaTeX** equations into Radical Pie, and they will be formatted automatically. You can then modify them graphically if needed.
 - If you want a **LaTeX-like appearance**, you can install the NewCM-Radix font collection (https://github.com/nasosi/NewCM-Radix
 ), which works seamlessly with Radical Pie.
-
-
-
-
+- Avoid ungrouping the equation object in Inkscape, as this will make it no longer editable. If this happens accidentally, you can restore it using the Undo function.
