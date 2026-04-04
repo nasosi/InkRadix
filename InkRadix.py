@@ -1,4 +1,4 @@
-# InkRadix v 0.9.1: An Inkscape extension for editable Radical Pie Equations
+# InkRadix v 0.9.2: An Inkscape extension for editable Radical Pie Equations
 #
 # MIT License
 #
@@ -201,15 +201,15 @@ def GetAnchors( bBox ):
     """
 
     return {
-        "top-left":      inkex.Vector2d( bBox.left,                 bBox.top ),
-        "top-center":    inkex.Vector2d( bBox.left + bBox.width/2,  bBox.top ),
-        "top-right":     inkex.Vector2d( bBox.right,                bBox.top ),
-        "middle-left":   inkex.Vector2d( bBox.left,                 bBox.top + bBox.height/2 ),
-        "center":        inkex.Vector2d( bBox.center_x,             bBox.center_y ),
-        "middle-right":  inkex.Vector2d( bBox.right,                bBox.top + bBox.height/2 ),
-        "bottom-left":   inkex.Vector2d( bBox.left,                 bBox.bottom ),
-        "bottom-center": inkex.Vector2d( bBox.left + bBox.width/2,  bBox.bottom ),
-        "bottom-right":  inkex.Vector2d( bBox.right,                bBox.bottom )
+        "top-left":      inkex.Vector2d( bBox.left,     bBox.top ),
+        "top-center":    inkex.Vector2d( bBox.center_x, bBox.top ),
+        "top-right":     inkex.Vector2d( bBox.right,    bBox.top ),
+        "middle-left":   inkex.Vector2d( bBox.left,     bBox.center_y ),
+        "center":        inkex.Vector2d( bBox.center_x, bBox.center_y ),
+        "middle-right":  inkex.Vector2d( bBox.right,    bBox.center_y ),
+        "bottom-left":   inkex.Vector2d( bBox.left,     bBox.bottom ),
+        "bottom-center": inkex.Vector2d( bBox.center_x, bBox.bottom ),
+        "bottom-right":  inkex.Vector2d( bBox.right,    bBox.bottom )
     }
 
 
@@ -313,7 +313,7 @@ class InkRadix( inkex.EffectExtension ):
         Return True if the group contains exactly one <inkradix:radicalpie>
         element, which itself contains exactly one <inkradix:datav1> element.
         """
-        # Find all inkradix:radicalpie children (ignore other elements)
+
         radicalPieChildren = [
             child for child in group 
             if isinstance( child.tag, str ) and self.IsInkRadixElement (child, "radicalpie" )
@@ -324,13 +324,12 @@ class InkRadix( inkex.EffectExtension ):
 
         radicalPieElem = radicalPieChildren[ 0 ]
 
-        # Get only element children
-        datav1Children = [
+        dataV1Children = [
             child for child in radicalPieElem
             if isinstance (child.tag, str ) and self.IsInkRadixElement( child, "datav1" )
         ]
 
-        return len( datav1Children ) == 1
+        return len( dataV1Children ) == 1
 
 
     def FindEditingGroup( self ):
@@ -646,11 +645,19 @@ class InkRadix( inkex.EffectExtension ):
         else:
 
             T2 = inkex.Transform(f"translate({o.x},{o.y})") * T1
+        
+        # Ideally, we would compute: c2g = T2.apply_to_point( c2l ), but inkscape 
+        # recomputes the box from the transformed geometry. This can introduce small
+        # shifts in the center due to stroke thickness or curve extrema. This subsequently
+        # effects the corsshair location calculation.
+        newGroup.set( 'transform', str( T2 ) )  
+        layer.append( newGroup )
+        finalGlobalBBox = newGroup.bounding_box()
+        layer.remove( newGroup )
+        c2g     = inkex.Vector2d( finalGlobalBBox.center_x, finalGlobalBBox.center_y )
 
-        c2g             = T2.apply_to_point( c2l )
-        DeltaP2         = p1g - c2g
+        DeltaP2 = p1g - c2g
 
-        newGroup.set( 'transform', str( T2 ) )                  
         newGroup.set( IS + "transform-center-x", str( DeltaP2.x ) )
         newGroup.set( IS + "transform-center-y", str( -DeltaP2.y ) )
         
