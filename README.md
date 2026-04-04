@@ -9,7 +9,7 @@ InkRadix is an Inkscape extension that enables editable equations with Radical P
 # Installation
 There are several ways to install InkRadix:
 
-## Option 1: Easiest
+## Option 1: Easiest (Downloads and installs)
 If you have Windows version 10 1803 or later (very likely), you can install easily with:
 1. Open a Command Prompt
 2. Copy, paste, and execute the following command:
