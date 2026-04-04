@@ -51,4 +51,4 @@ The extension adds a menu entry under ```Extensions``` → ```Text``` → ```Rad
 - Avoid ungrouping the equation object in Inkscape, as this will make it no longer editable. If this happens by accident, you can restore it using the Undo function. Occasionally, you may need to Undo and then Redo.
 
 # Supported versions
-InkRadix has been tested to work with Inkscape versions 1.3 and 1.4, and Radical Pie 1.8 and 1.9.
+InkRadix has been tested to work with Radical Pie versions 1.8 and 1.9, and Inkscape versions 1.3 and 1.4.
