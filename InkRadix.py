@@ -52,7 +52,7 @@ IS                    = f"{{{INKSCAPE_NAMESPACE}}}"
 
 etree.register_namespace( "inkradix", INKRADIX_NAMESPACE )
 
-USE_AT_OPERATOR = hasattr(inkex.Transform, "__matmul__")  # __matmul__ defines @ operator
+USE_AT_OPERATOR = hasattr(inkex.Transform, "__matmul__")
 
 def DecodeNumericEntities( text ):
 
