@@ -52,7 +52,7 @@ The extension adds a menu entry under ```Extensions``` → ```Text``` → ```Rad
 ## Usage Snippets
 ## Add new equation
 <video width="640" controls>
-  <source src="https://github.com/nasosi/InkRadix/tree/main/Resources/UsageSnippets/newEquation.mp4" type="video/mp4">
+  <source src="https://raw.githubusercontent.com/nasosi/InkRadix/main/Resources/UsageSnippets/newEquation.mp4" type="video/mp4">
 </video>
 
 # Supported versions
