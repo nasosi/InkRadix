@@ -49,8 +49,10 @@ INKRADIX_NAMESPACE    = "https://github.com/nasosi/InkRadix/ns"
 INKSCAPE_NAMESPACE    = "http://www.inkscape.org/namespaces/inkscape"
 IR                    = f"{{{INKRADIX_NAMESPACE}}}"
 IS                    = f"{{{INKSCAPE_NAMESPACE}}}"
+
 etree.register_namespace( "inkradix", INKRADIX_NAMESPACE )
 
+USE_AT_OPERATOR = hasattr(inkex.Transform, "__matmul__")  # __matmul__ defines @ operator
 
 def DecodeNumericEntities( text ):
 
@@ -340,7 +342,7 @@ class InkRadix( inkex.EffectExtension ):
             lxml.etree.Element | None: The group element or None if none selected.
         """
 
-        selected = self.svg.selection
+        selected = getattr( self.svg, "selection", getattr( self.svg, "selected", {} ) ) # To support older versions
 
         if not selected:
 
@@ -636,7 +638,15 @@ class InkRadix( inkex.EffectExtension ):
         c2l             = inkex.Vector2d( newLocalBBox.center_x, newLocalBBox.center_y )
         p2l             = DeltaPl + a2l 
         o               = p1g - T1.apply_to_point( p2l )
-        T2              = inkex.Transform( f"translate({o.x},{o.y})" ) @ T1
+
+        if USE_AT_OPERATOR:
+
+            T2 = inkex.Transform(f"translate({o.x},{o.y})") @ T1
+
+        else:
+
+            T2 = inkex.Transform(f"translate({o.x},{o.y})") * T1
+
         c2g             = T2.apply_to_point( c2l )
         DeltaP2         = p1g - c2g
 
