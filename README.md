@@ -12,7 +12,7 @@ There are several ways to install InkRadix:
 ## Option 1: Easiest
 If you have Windows version 10 1803 or later (very likely), you can install easily with:
 1. Open a Command Prompt
-2. Copy, paste and execute the following command:
+2. Copy, paste, and execute the following command:
 ```
 (if exist "%temp%\InkRadixInst" rmdir /s /q "%temp%\InkRadixInst") && md "%temp%\InkRadixInst" && curl -L -o "%temp%\InkRadixInst\main.zip" "https://github.com/nasosi/InkRadix/archive/refs/heads/main.zip" && powershell -Command "Expand-Archive -Path '%temp%\InkRadixInst\main.zip' -DestinationPath '%temp%\InkRadixInst' -Force" && cd /d "%temp%\InkRadixInst\InkRadix-main\Resources" && call Install.bat && cd /d "%temp%" && rmdir /s /q "%temp%\InkRadixInst"
 ```
@@ -35,7 +35,7 @@ If you have Windows version 10 1803 or later (very likely), you can install easi
 3. In the Extensions window that appears, select the ```Install Packages``` tab.
 4. At the bottom of the window, select the folder icon.
 5. Navigate to the location where  ```InkRadix-main.zip``` was download it, select it and click ```Open``` at the bottom right of the window.
-6. Close the Extensions window and restart inkscape.
+6. Close the Extensions window and restart Inkscape.
 
 # Usage
 The extension adds a menu entry under ```Extensions``` → ```Text``` → ```Radical Pie Equation```.
@@ -45,4 +45,5 @@ The extension adds a menu entry under ```Extensions``` → ```Text``` → ```Rad
 - You can **paste LaTeX** equations into Radical Pie, and they will be formatted automatically. You can then modify them graphically.
 - If you want a **LaTeX-like appearance**, you can install the NewCM-Radix font collection (https://github.com/nasosi/NewCM-Radix
 ), which works seamlessly with Radical Pie.
+- Use the Inkscape pivot cursor to indicate the intended **alignment anchor**. InkRadix will automatically reference this pivot relative to the nearest bounding box anchor of the equation object (e.g., top-left, middle-right, etc.). A technical illustration is available in ```Resources/ClonePoseAnchored.svg```.
 - Avoid ungrouping the equation object in Inkscape, as this will make it no longer editable. If this happens by accident, you can restore it using the Undo function.
