@@ -50,5 +50,9 @@ The extension adds a menu entry under ```Extensions``` → ```Text``` → ```Rad
 - ```Ctrl+Alt+Shift+E``` works well as a **keyboard shortcut**. To set it up, go to ```Edit``` → ```Preferences``` → ```Interface``` → ```Keyboard```, search for ```Radical Pie```, click on ```Radical Pie Equation```, and press ```Ctrl+Alt+Shift+E``` on your keyboard.
 - Avoid ungrouping the equation object in Inkscape, as this will make it no longer editable. If this happens by accident, you can restore it using the Undo function. Occasionally, you may need to Undo and then Redo.
 
+<div align="center">
+  <img src="https://raw.githubusercontent.com/nasosi/InkRadix/main/Resources/UsageSnippets/newEquation.gif" alt="New Equation">
+</div>
+
 # Supported versions
 InkRadix has been tested to work with Radical Pie versions 1.8 and 1.9, and Inkscape versions 1.0 through 1.4.
