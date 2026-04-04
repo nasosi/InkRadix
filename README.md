@@ -49,6 +49,7 @@ The extension adds a menu entry under ```Extensions``` → ```Text``` → ```Rad
 - Use the Inkscape pivot cursor to indicate the intended **alignment anchor**. InkRadix will automatically reference this pivot relative to the nearest bounding box anchor of the equation object (e.g., top-left, middle-right, etc.). A technical illustration is available in ```Resources/ClonePoseAnchored.svg```.
 - ```Ctrl+Alt+Shift+E``` works well as a **keyboard shortcut**. To set it up, go to ```Edit``` → ```Preferences``` → ```Interface``` → ```Keyboard```, search for ```Radical Pie```, click on ```Radical Pie Equation```, and press ```Ctrl+Alt+Shift+E``` on your keyboard.
 - Avoid ungrouping the equation object in Inkscape, as this will make it no longer editable. If this happens by accident, you can restore it using the Undo function. Occasionally, you may need to Undo and then Redo.
+- When creating a new equation, InkRadix does not automatically load the user’s default design. To apply it, after Radical Pie starts, select ```Settings``` → ```Load User Default Design``` from the Radical Pie menu.
 
 ## Usage GIFs
 ## Creating a new equation
