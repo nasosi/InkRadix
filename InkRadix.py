@@ -1,4 +1,4 @@
-# InkRadix v 0.9.0: An Inkscape extension for editable Radical Pie Equations
+# InkRadix v 0.9.1: An Inkscape extension for editable Radical Pie Equations
 #
 # MIT License
 #
@@ -36,7 +36,7 @@ import inkex
 from lxml import etree
 
 
-DEBUG = True
+DEBUG = False
 
 
 SVG_DEFAULT_CONTENT   = """<svg width="6pt" height="9pt" viewBox="0 -9 6 9" version="1.1" xmlns="http://www.w3.org/2000/svg"><desc>Radical Pie Equation</desc><!--D{} Gr { Bg {}}--></svg>"""
@@ -306,27 +306,29 @@ class InkRadix( inkex.EffectExtension ):
         return qname.localname == name and qname.namespace == INKRADIX_NAMESPACE
 
 
-    def IsRadicalPieObject( self, elem ):
-
+    def IsRadicalPieObject( self, group ):
         """
-        Determine if a group contains RadicalPie data.
-    
-        Parameters:
-            elem (lxml.etree.Element): Group to inspect
-        
-        Returns:
-            bool: True if the group contains a <inkradix:datav1> element with text.
+        Return True if the group contains exactly one <inkradix:radicalpie>
+        element, which itself contains exactly one <inkradix:datav1> element.
         """
+        # Find all inkradix:radicalpie children (ignore other elements)
+        radicalPieChildren = [
+            child for child in group 
+            if isinstance( child.tag, str ) and self.IsInkRadixElement (child, "radicalpie" )
+        ]
 
-        for node in elem.iter( ):
+        if len( radicalPieChildren ) != 1:
+            return False
 
-            if self.IsInkRadixElement( node, "datav1" ):
+        radicalPieElem = radicalPieChildren[ 0 ]
 
-                if node.text and node.text.strip( ):
+        # Get only element children
+        datav1Children = [
+            child for child in radicalPieElem
+            if isinstance (child.tag, str ) and self.IsInkRadixElement( child, "datav1" )
+        ]
 
-                    return True
-
-        return False
+        return len( datav1Children ) == 1
 
 
     def FindEditingGroup( self ):
@@ -352,6 +354,9 @@ class InkRadix( inkex.EffectExtension ):
 
                 return elem
 
+
+        self.msg( "Selected object is not an InkRadix or the equation is inside a group. Created a new one." )
+            
         return None
 
 
@@ -618,6 +623,7 @@ class InkRadix( inkex.EffectExtension ):
         # Map old pivot into local space, express it relative to the nearest anchor,
         # transfer that offset to the corresponding anchor in the new shape, then solve
         # translation so the reconstructed pivot matches the original in global space.
+        # Details in: Resources/ClonePoseAnchored.svg
         T1              = inkex.Transform( oldGroup.attrib.get( 'transform', '' ) );
         T1inv           = -T1;
         c1g             = inkex.Vector2d( oldBBox.center_x, oldBBox.center_y )
@@ -630,7 +636,7 @@ class InkRadix( inkex.EffectExtension ):
         c2l             = inkex.Vector2d( newLocalBBox.center_x, newLocalBBox.center_y )
         p2l             = DeltaPl + a2l 
         o               = p1g - T1.apply_to_point( p2l )
-        T2              = inkex.Transform( f"translate({o.x},{o.y})" ) * T1
+        T2              = inkex.Transform( f"translate({o.x},{o.y})" ) @ T1
         c2g             = T2.apply_to_point( c2l )
         DeltaP2         = p1g - c2g
 
@@ -742,7 +748,7 @@ class InkRadix( inkex.EffectExtension ):
     
         Raises:
             inkex.AbortExtension: For any error including RadicalPie not found, XML parsing errors, or unexpected exceptions.
-        """
+    """
 
         if sys.platform != "win32":
 
