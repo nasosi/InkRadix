@@ -22,4 +22,3 @@ echo %TARGET_DIR%
 echo.
 echo Please restart Inkscape to load the extension.
 
-pause

@@ -27,7 +27,6 @@ import os
 import re
 import sys
 import copy
-import shlex
 import winreg
 import hashlib
 import tempfile
@@ -37,19 +36,38 @@ import inkex
 from lxml import etree
 
 
-DEBUG = False
+DEBUG = True
 
 
-SVG_DEFAULT_CONTENT          = """<svg width="6pt" height="8pt" viewBox="0 -8 6 8" version="1.1" xmlns="http://www.w3.org/2000/svg"><desc>Radical Pie Equation</desc><!--D{} Gr { Bg {}}--></svg>"""
-DEFAULT_RADICAL_PIE_EXE_PATH = r"C:\Program Files\RadicalPie\RadicalPie.exe"
-INKRADIX_NAMESPACE           = "https://github.com/nasosi/InkRadix/ns"
-IR                           = f"{{{INKRADIX_NAMESPACE}}}"
-SVG_DRAWABLE_TAGS            = {"path", "g", "text", "line", "rect", "circle", "ellipse", "polygon", "polyline"}
+SVG_DEFAULT_CONTENT   = """<svg width="6pt" height="9pt" viewBox="0 -9 6 9" version="1.1" xmlns="http://www.w3.org/2000/svg"><desc>Radical Pie Equation</desc><!--D{} Gr { Bg {}}--></svg>"""
+SVG_DRAWABLE_TAGS     = { "path", "g", "text", "line", "rect", "circle", "ellipse", "polygon",
+                          "polyline" }
+FALLBACK_RP_EXE_PATH1 = r"C:\Program Files\RadicalPie\RadicalPie.exe"
+FALLBACK_RP_EXE_PATH2 = r"D:\Program Files\RadicalPie\RadicalPie.exe"
 
+INKRADIX_NAMESPACE    = "https://github.com/nasosi/InkRadix/ns"
+INKSCAPE_NAMESPACE    = "http://www.inkscape.org/namespaces/inkscape"
+IR                    = f"{{{INKRADIX_NAMESPACE}}}"
+IS                    = f"{{{INKSCAPE_NAMESPACE}}}"
 etree.register_namespace( "inkradix", INKRADIX_NAMESPACE )
 
 
 def DecodeNumericEntities( text ):
+
+    """
+    Decode numeric character references in a string to actual characters.
+    
+    Supports both decimal (e.g., &#65;) and hexadecimal (e.g., &#x41;) entities.
+    
+    Parameters:
+        text (str): Input string containing numeric entities.
+        
+    Returns:
+        str: String with numeric entities replaced by corresponding characters.
+    
+    Notes:
+        Invalid or out-of-range numeric entities are left unchanged.
+    """
 
     def repl( match ):
 
@@ -79,44 +97,20 @@ def DecodeNumericEntities( text ):
     return re.sub( r"&#(x?[0-9A-Fa-f]+);", repl, text )
 
 
-def NormalizeExePath( path ):
-
-    if not path:
-
-        return None
-
-    path = path.strip( )
-
-    if not path:
-
-        return None
-
-    if path[ 0 ] in ( '"', "'" ):
-
-        try:
-
-            parts = shlex.split( path, posix=False )
-            exe   = parts[ 0 ] if parts else None
-
-        except ValueError:
-
-            exe = path.strip( '"' ).strip( "'" )
-
-        return exe
-
-
-    if os.path.exists( path ):
-
-        return path
-
-
-    firstPart = path.split( " " )[ 0 ]
-
-    return firstPart if firstPart else None
-
-
-
 def FileHash( path ):
+
+    """
+    Compute the SHA256 hash of a file.
+    
+    Parameters:
+        path (str): File path to compute the hash for.
+        
+    Returns:
+        str: Hexadecimal string of the SHA256 hash.
+        
+    Raises:
+        IOError/OSError if the file cannot be read.
+    """
 
     h = hashlib.sha256( )
 
@@ -131,6 +125,21 @@ def FileHash( path ):
 
 
 def ReadRegistryValue( root, subkey, valueName ):
+
+    """
+    Read a value from the Windows Registry.
+    
+    Parameters:
+        root (winreg.HKEY_*): Root key, e.g., winreg.HKEY_CLASSES_ROOT
+        subkey (str): Registry subkey path
+        valueName (str): Name of the value to retrieve (empty string for default)
+        
+    Returns:
+        str | None: Value if found, otherwise None
+        
+    Raises:
+        RuntimeError: For access errors other than FileNotFoundError
+    """
 
     try:
 
@@ -148,6 +157,79 @@ def ReadRegistryValue( root, subkey, valueName ):
 
         raise RuntimeError( f"Registry access error: {e}" )
 
+def GetLocalBoundingBox( group ):
+    
+    """
+    Get the bounding box of a group ignoring its transform.
+    
+    Parameters:
+        group (inkex.Group): Group element whose bounding box is to be calculated.
+        
+    Returns:
+        inkex.BoundingBox: Bounding box in local coordinates.
+    
+    Notes:
+        Temporarily removes 'transform' to calculate local bounding box.
+    """
+
+    originalTransform = group.attrib.get('transform')
+    
+    if originalTransform:
+        del group.attrib['transform']
+    
+    bBox = group.bounding_box( )           
+    
+    if originalTransform:
+        group.set( 'transform', originalTransform )
+        
+    return bBox;
+
+def GetAnchors( bBox ):
+
+    """
+    Return a dictionary of key anchor points for a bounding box.
+    
+    Parameters:
+        bBox (inkex.BoundingBox): The bounding box of an object.
+        
+    Returns:
+        dict: Mapping of anchor names to `inkex.Vector2d` points.
+              Keys include: top-left, top-center, top-right, middle-left, center,
+                            middle-right, bottom-left, bottom-center, bottom-right
+    """
+
+    return {
+        "top-left":      inkex.Vector2d( bBox.left,                 bBox.top ),
+        "top-center":    inkex.Vector2d( bBox.left + bBox.width/2,  bBox.top ),
+        "top-right":     inkex.Vector2d( bBox.right,                bBox.top ),
+        "middle-left":   inkex.Vector2d( bBox.left,                 bBox.top + bBox.height/2 ),
+        "center":        inkex.Vector2d( bBox.center_x,             bBox.center_y ),
+        "middle-right":  inkex.Vector2d( bBox.right,                bBox.top + bBox.height/2 ),
+        "bottom-left":   inkex.Vector2d( bBox.left,                 bBox.bottom ),
+        "bottom-center": inkex.Vector2d( bBox.left + bBox.width/2,  bBox.bottom ),
+        "bottom-right":  inkex.Vector2d( bBox.right,                bBox.bottom )
+    }
+
+
+def GetNearestAnchor( point, bBox ): 
+    
+    """
+    Find the nearest anchor point of a bounding box to a given point.
+    
+    Parameters:
+        point (inkex.Vector2d): The reference point.
+        bBox (inkex.BoundingBox): The bounding box to compare against.
+        
+    Returns:
+        tuple[str, inkex.Vector2d]: (anchor_name, anchor_point)
+    """
+
+    nearestName, nearestPoint = min(
+        GetAnchors( bBox ).items(),
+        key=lambda kv: (kv[1] - point).length
+    )
+    return nearestName, nearestPoint
+
 
 class InkRadix( inkex.EffectExtension ):
 
@@ -160,41 +242,60 @@ class InkRadix( inkex.EffectExtension ):
 
     def FindRadicalPieExecutablePath( self ):
 
+        """
+        Locate the RadicalPie executable.
+    
+        Checks the Windows Registry first, then two fallback paths.
+    
+        Returns:
+            str | None: Path to RadicalPie executable if found, else None.
+        """
+
         root      = winreg.HKEY_CLASSES_ROOT
         subkey    = r"CLSID\{4EE860BB-53CE-44F3-BC6B-434146CAB233}\LocalServer32"
         valueName = ""
         exePath   = None
 
-        regValue = ReadRegistryValue( root, subkey, valueName )
-        if regValue:
+        try:
 
-            exePath = NormalizeExePath( regValue )
+            exePath = ReadRegistryValue( root, subkey, valueName )
 
-            if exePath and os.path.exists( exePath ):
+        except Exception as e:
 
-                self.DebugMsg( f"RadicalPie executable found in registry: {exePath}" )
-                return exePath
-
-            elif exePath:
-
-                self.DebugMsg( f"Registry path exists but file not found: {exePath}" )
-
-            else:
-
-                self.DebugMsg( f"Registry value could not be normalized: {regValue}" )
-
-        if os.path.exists( DEFAULT_RADICAL_PIE_EXE_PATH ):
-
-            self.DebugMsg( f"Using default RadicalPie path: {DEFAULT_RADICAL_PIE_EXE_PATH}" )
-            return DEFAULT_RADICAL_PIE_EXE_PATH
+            self.DebugMsg(  "Warning: could not read Radical Pie executable path from registry."
+                            "Trying fallbacks." )
 
 
-        self.DebugMsg( "RadicalPie executable not found." )
+        if exePath and os.path.exists( exePath ):
+
+            self.DebugMsg( f"RadicalPie executable found in registry: {exePath}" )
+            return exePath
+
+        if os.path.exists( FALLBACK_RP_EXE_PATH1 ):
+
+            self.DebugMsg( f"Using fallback RadicalPie path: {FALLBACK_RP_EXE_PATH1}" )
+            return FALLBACK_RP_EXE_PATH1
+
+        if os.path.exists( FALLBACK_RP_EXE_PATH2 ):
+
+            self.DebugMsg( f"Using fallback RadicalPie path: {FALLBACK_RP_EXE_PATH2}" )
+            return FALLBACK_RP_EXE_PATH2
 
         return None
 
 
     def IsInkRadixElement( self, node, name ):
+
+        """
+        Check if an XML node is an InkRadix element with a specific local name.
+    
+        Parameters:
+            node (lxml.etree.Element): Node to check
+            name (str): Expected local name
+    
+        Returns:
+            bool: True if node matches InkRadix namespace and name.
+        """
 
         if not isinstance( node.tag, str ):
 
@@ -206,6 +307,16 @@ class InkRadix( inkex.EffectExtension ):
 
 
     def IsRadicalPieObject( self, elem ):
+
+        """
+        Determine if a group contains RadicalPie data.
+    
+        Parameters:
+            elem (lxml.etree.Element): Group to inspect
+        
+        Returns:
+            bool: True if the group contains a <inkradix:datav1> element with text.
+        """
 
         for node in elem.iter( ):
 
@@ -219,6 +330,13 @@ class InkRadix( inkex.EffectExtension ):
 
 
     def FindEditingGroup( self ):
+
+        """
+        Find a selected group that is a RadicalPie object for editing.
+    
+        Returns:
+            lxml.etree.Element | None: The group element or None if none selected.
+        """
 
         selected = self.svg.selection
 
@@ -237,7 +355,18 @@ class InkRadix( inkex.EffectExtension ):
         return None
 
 
-    def ConvertRadicalPieXMLToComments( self, group ):
+    def ConvertXmlDataToRadicalPieComments( self, group ):
+
+        """
+        Convert InkRadix XML data elements into SVG comments.
+    
+        Parameters:
+            group (lxml.etree.Element): Group containing InkRadix elements.
+    
+        Notes:
+            Replaces <inkradix:radicalpie><datav1>text</datav1></inkradix:radicalpie>
+            with <!--text--> comments.
+        """
 
         for node in list( group.iter( ) ):
 
@@ -262,10 +391,22 @@ class InkRadix( inkex.EffectExtension ):
 
                 else:
 
-                    self.DebugMsg( "ConvertRadicalPieXMLToComments: Node had no parent during replacement" )
+                    self.DebugMsg(  "ConverXmlDataToRadicalPieComments: "
+                                    "Node had no parent during replacement." )
 
 
-    def ConvertCommentsToRadicalPieXML( self, group ):
+    def ConvertRadicalPieCommentsToXMLData( self, group ):
+
+        """
+        Convert RadicalPie comments back into InkRadix XML elements.
+    
+        Parameters:
+            group (lxml.etree.Element): Group to process.
+    
+        Notes:
+            Replaces <!--text--> comments with
+            <inkradix:radicalpie><datav1>text</datav1></inkradix:radicalpie>.
+        """
 
         for node in list( group.iter( ) ):
 
@@ -288,10 +429,19 @@ class InkRadix( inkex.EffectExtension ):
 
                 else:
 
-                    self.DebugMsg( "ConvertCommentsToRadicalPieXML: Node had no parent during replacement" )
+                    self.DebugMsg(  "ConvertRadicalPieCommentsToXMLData: "
+                                    "Node had no parent during replacement." )
 
 
     def WriteInputSvg( self, svgFilePath, editingGroup ):
+
+        """
+        Write a temporary input SVG for RadicalPie.
+    
+        Parameters:
+            svgFilePath (str): Path to write the SVG.
+            editingGroup (lxml.etree.Element | None): Existing group to export, or None to use default.
+        """
 
         if editingGroup is not None:
 
@@ -300,7 +450,7 @@ class InkRadix( inkex.EffectExtension ):
 
             groupCopy = copy.deepcopy( editingGroup )
 
-            self.ConvertRadicalPieXMLToComments( groupCopy )
+            self.ConvertXmlDataToRadicalPieComments( groupCopy )
 
             newSvg.append( groupCopy )
 
@@ -314,6 +464,19 @@ class InkRadix( inkex.EffectExtension ):
 
 
     def RunRadicalPie( self, svgFilePath ):
+
+        """
+        Launch RadicalPie to edit the given SVG file.
+    
+        Parameters:
+            svgFilePath (str): Path of the SVG file to edit.
+        
+        Returns:
+            bool: True if the file changed, False if unchanged.
+    
+        Raises:
+            inkex.AbortExtension: If RadicalPie is not found or fails.
+        """
 
         radicalPieExePath = self.FindRadicalPieExecutablePath( )
 
@@ -358,7 +521,7 @@ class InkRadix( inkex.EffectExtension ):
 
         if beforeHash is None or afterHash is None:
 
-            self.DebugMsg(" Hash comparison unavailable. Assuming file changed." )
+            self.DebugMsg("Hash comparison unavailable. Assuming file changed." )
             return True
 
         return beforeHash != afterHash
@@ -367,64 +530,146 @@ class InkRadix( inkex.EffectExtension ):
 
     def ParseOutputSvg( self, svgFilePath ):
 
-        parser = etree.XMLParser( recover=True, remove_comments=False, huge_tree=True )
-        tree = etree.parse( svgFilePath, parser )
-        root = tree.getroot( )
+        """
+        Load an SVG file as an Inkex SVG document.
+    
+        Parameters:
+            svgFilePath (str): Path to SVG file.
+        
+        Returns:
+            inkex.SvgDocument: Parsed SVG object.
+        """
 
-        hasContent = any(
-            isinstance( node.tag, str ) and
-            node.tag.startswith( "{" ) and
-            node.tag.split( "}", 1 )[ 1 ] in SVG_DRAWABLE_TAGS
-            for node in root.iter()
-        )
-
-        if not hasContent:
-
-            return None
-
-        return root
-
+        return inkex.load_svg( svgFilePath ) 
+        
 
     def BuildGroupFromRoot( self, root ):
 
-        newGroup = etree.Element( inkex.addNS( 'g', 'svg' ) )
+        """
+        Build a new Inkex group from the root of an output SVG.
+    
+        Parameters:
+            root (inkex.SvgDocument): Root SVG document from RadicalPie output.
+        
+        Returns:
+            inkex.Group: New group containing output nodes with InkRadix data restored.
+        """
 
-        newGroup.set( "id", self.svg.get_unique_id( "radicalpie-group" ) )
-        newGroup.set( inkex.addNS( 'label', 'inkscape' ), "RadicalPie Output" )
-        newGroup.set( inkex.addNS( 'groupmode', 'inkscape' ), 'group' )
+        newGroup = inkex.Group( )
+        newGroup.set ("id", self.svg.get_unique_id( "radicalpie-group" ) )
+        newGroup.set(inkex.addNS( 'label', 'inkscape'), "RadicalPie Output" )
+        newGroup.set(inkex.addNS( 'groupmode', 'inkscape'), 'group' )
 
-        for node in root:
+        for node in root.getroot():
+            newGroup.append( node )  
 
-            newGroup.append( copy.deepcopy( node ) )
-
-        self.ConvertCommentsToRadicalPieXML( newGroup )
+        self.ConvertRadicalPieCommentsToXMLData( newGroup )
 
         return newGroup
 
 
+    def ClonePoseAnchored( self, oldGroup, newGroup ):
+
+        """
+        Copy the old group's anchored pivot pose to a new group.
+    
+        Parameters:
+            oldGroup (inkex.Group): Original group with pose.
+            newGroup (inkex.Group): New group generated by RadicalPie.
+        
+        Returns:
+            bool: True if cloning succeeded, False otherwise.
+        """
+
+        if oldGroup is None or newGroup is None:
+            return              
+        
+        # Old Pose
+        try:
+
+            oldPivotX = float(oldGroup.attrib.get(IS + "transform-center-x") or 0.0)
+            oldPivotY = -float(oldGroup.attrib.get(IS + "transform-center-y") or 0.0)
+
+        except Exception as e:
+
+            raise inkex.AbortExtension( f"Error reading transform-center-x, or transform-center-y: {e}" )
+
+        oldBBox         = oldGroup.bounding_box( )
+        if oldBBox is None:
+
+            return False
+
+        oldLocalBBox    = GetLocalBoundingBox( oldGroup )
+
+        if oldLocalBBox is None:
+
+            return False
+
+        # The new local bounding box generated by Radical Pie 
+        layer = self.svg.get_current_layer()
+        layer.append( newGroup )
+        newLocalBBox = newGroup.bounding_box()
+        layer.remove( newGroup )
+
+        if newLocalBBox is None:
+
+            return False
+
+        # Map old pivot into local space, express it relative to the nearest anchor,
+        # transfer that offset to the corresponding anchor in the new shape, then solve
+        # translation so the reconstructed pivot matches the original in global space.
+        T1              = inkex.Transform( oldGroup.attrib.get( 'transform', '' ) );
+        T1inv           = -T1;
+        c1g             = inkex.Vector2d( oldBBox.center_x, oldBBox.center_y )
+        DeltaP1         = inkex.Vector2d( oldPivotX, oldPivotY)
+        p1g             = c1g + DeltaP1
+        P1l             = T1inv.apply_to_point( p1g )
+        anchorName, a1l = GetNearestAnchor( P1l, oldLocalBBox )
+        a2l             = GetAnchors( newLocalBBox )[ anchorName ]
+        DeltaPl         = P1l - a1l
+        c2l             = inkex.Vector2d( newLocalBBox.center_x, newLocalBBox.center_y )
+        p2l             = DeltaPl + a2l 
+        o               = p1g - T1.apply_to_point( p2l )
+        T2              = inkex.Transform( f"translate({o.x},{o.y})" ) * T1
+        c2g             = T2.apply_to_point( c2l )
+        DeltaP2         = p1g - c2g
+
+        newGroup.set( 'transform', str( T2 ) )                  
+        newGroup.set( IS + "transform-center-x", str( DeltaP2.x ) )
+        newGroup.set( IS + "transform-center-y", str( -DeltaP2.y ) )
+        
+        return True           
+
+
     def ApplyResultGroup( self, newGroup, editingGroup ):
+
+        """
+        Replace or append RadicalPie output into the current SVG.
+    
+        Parameters:
+            newGroup (inkex.Group): New RadicalPie group.
+            editingGroup (inkex.Group | None): Original group being edited, if any.
+        """
 
         if editingGroup is not None:
 
-            if 'transform' in newGroup.attrib:
-
-                self.DebugMsg("Warning: RadicalPie returned a transform, overriding it.")
-
-
-            originalTransform = editingGroup.attrib.get('transform')
-            if originalTransform:
-
-                newGroup.set('transform', originalTransform)
-
             parent = editingGroup.getparent( )
             if parent is None:
+            
+                raise inkex.AbortExtension( "Editing group has no parent." )
+                
+            if 'transform' in newGroup.attrib:
+            
+                self.DebugMsg( "Warning: RadicalPie returned a transform, overriding it." )
 
-                raise inkex.AbortExtension("Editing group has no parent.")
+            if not self.ClonePoseAnchored( editingGroup, newGroup ):
+
+                self.DebugMsg( "ClonePoseAnchored failed. Original object preserved." )
 
             parent.replace( editingGroup, newGroup )
 
             self.DebugMsg( "Selection replaced with updated RadicalPie SVG." )
-
+            
         else:
 
             layer = self.svg.get_current_layer( )
@@ -433,7 +678,18 @@ class InkRadix( inkex.EffectExtension ):
             self.DebugMsg( "New RadicalPie SVG added." )
 
 
+
     def PrepareTempFile( self, editingGroup ):
+
+        """
+        Create a temporary SVG file for RadicalPie input.
+    
+        Parameters:
+            editingGroup (inkex.Group | None): Group to export, or None.
+        
+        Returns:
+            str: Path to temporary SVG file.
+        """
 
         tmpFile = tempfile.NamedTemporaryFile( suffix=".svg", delete=False )
         svgFilePath = tmpFile.name
@@ -445,6 +701,15 @@ class InkRadix( inkex.EffectExtension ):
 
 
     def ApplyChanges( self, changed, editingGroup, svgFilePath ):
+
+        """
+        Apply changes from RadicalPie output back into the SVG document.
+    
+        Parameters:
+            changed (bool): Whether RadicalPie modified the SVG.
+            editingGroup (inkex.Group | None): Original group being edited, if any.
+            svgFilePath (str): Path to RadicalPie output SVG.
+        """
 
         if not changed:
 
@@ -465,10 +730,25 @@ class InkRadix( inkex.EffectExtension ):
 
     def effect( self ):
 
+        """
+        Main entry point for the InkRadix extension.
+    
+        Workflow:
+            1. Ensure Windows platform.
+            2. Detect editing group.
+            3. Prepare temp SVG file.
+            4. Run RadicalPie.
+            5. Apply output back into SVG.
+    
+        Raises:
+            inkex.AbortExtension: For any error including RadicalPie not found, XML parsing errors, or unexpected exceptions.
+        """
+
         if sys.platform != "win32":
 
             raise inkex.AbortExtension(
-                "InkRadix extension only works on Windows RadicalPie integration requires a Windows system."
+                "InkRadix extension only works on Windows RadicalPie integration requires a "
+                "Windows system."
             )
 
 
