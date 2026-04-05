@@ -1,4 +1,4 @@
-# InkRadix v 0.9.2: An Inkscape extension for editable Radical Pie Equations
+# InkRadix v 0.9.3: An Inkscape extension for editable Radical Pie Equations
 #
 # MIT License
 #
@@ -177,11 +177,13 @@ def GetLocalBoundingBox( group ):
     originalTransform = group.attrib.get('transform')
     
     if originalTransform:
+
         del group.attrib['transform']
     
     bBox = group.bounding_box( )           
     
     if originalTransform:
+
         group.set( 'transform', originalTransform )
         
     return bBox;
@@ -223,14 +225,14 @@ def GetNearestAnchor( point, bBox ):
         bBox (inkex.BoundingBox): The bounding box to compare against.
         
     Returns:
-        tuple[str, inkex.Vector2d]: (anchor_name, anchor_point)
+        tuple[str, inkex.Vector2d]: (nearestAnchorName, nearestAnchorPoint)
     """
 
-    nearestName, nearestPoint = min(
+    nearestAnchorName, nearestAnchorPoint = min(
         GetAnchors( bBox ).items(),
-        key=lambda kv: (kv[1] - point).length
+        key = lambda kv: ( kv[ 1 ] - point ).length
     )
-    return nearestName, nearestPoint
+    return nearestAnchorName, nearestAnchorPoint
 
 
 class InkRadix( inkex.EffectExtension ):
@@ -341,7 +343,7 @@ class InkRadix( inkex.EffectExtension ):
             lxml.etree.Element | None: The group element or None if none selected.
         """
 
-        selected = getattr( self.svg, "selection", getattr( self.svg, "selected", {} ) ) # To support older versions
+        selected = getattr( self.svg, "selection", getattr( self.svg, "selected", { } ) ) # To support older versions
 
         if not selected:
 
@@ -378,15 +380,15 @@ class InkRadix( inkex.EffectExtension ):
 
             if self.IsInkRadixElement( node, "radicalpie" ):
 
-                data_elem = None
+                dataElem = None
                 for child in node:
 
                     if self.IsInkRadixElement(child, "datav1"):
 
-                        data_elem = child
+                        dataElem = child
                         break
 
-                text = data_elem.text if data_elem is not None else ""
+                text = dataElem.text if dataElem is not None else ""
 
                 comment = etree.Comment( text or "" )
 
@@ -424,14 +426,14 @@ class InkRadix( inkex.EffectExtension ):
 
                     continue
 
-                rp_elem = etree.Element( IR + "radicalpie" )
-                data_elem = etree.SubElement( rp_elem, IR + "datav1" )
-                data_elem.text = text
+                rpElem = etree.Element( IR + "radicalpie" )
+                dataElem = etree.SubElement( rpElem, IR + "datav1" )
+                dataElem.text = text
 
                 parent = node.getparent( )
                 if parent is not None:
 
-                    parent.replace( node, rp_elem )
+                    parent.replace( node, rpElem )
 
                 else:
 
@@ -567,6 +569,7 @@ class InkRadix( inkex.EffectExtension ):
         newGroup.set(inkex.addNS( 'groupmode', 'inkscape'), 'group' )
 
         for node in root.getroot():
+
             newGroup.append( node )  
 
         self.ConvertRadicalPieCommentsToXMLData( newGroup )
@@ -574,7 +577,7 @@ class InkRadix( inkex.EffectExtension ):
         return newGroup
 
 
-    def ClonePoseAnchored( self, oldGroup, newGroup ):
+    def CloneAnchoredPose( self, oldGroup, newGroup ):
 
         """
         Copy the old group's anchored pivot pose to a new group.
@@ -588,6 +591,7 @@ class InkRadix( inkex.EffectExtension ):
         """
 
         if oldGroup is None or newGroup is None:
+
             return              
         
         # Old Pose
@@ -624,7 +628,7 @@ class InkRadix( inkex.EffectExtension ):
         # Map old pivot into local space, express it relative to the nearest anchor,
         # transfer that offset to the corresponding anchor in the new shape, then solve
         # translation so the reconstructed pivot matches the original in global space.
-        # Details in: Resources/ClonePoseAnchored.svg
+        # Details in: Resources/CloneAnchoredPose.svg
         T1              = inkex.Transform( oldGroup.attrib.get( 'transform', '' ) );
         T1inv           = -T1;
         c1g             = inkex.Vector2d( oldBBox.center_x, oldBBox.center_y )
@@ -685,9 +689,9 @@ class InkRadix( inkex.EffectExtension ):
             
                 self.DebugMsg( "Warning: RadicalPie returned a transform, overriding it." )
 
-            if not self.ClonePoseAnchored( editingGroup, newGroup ):
+            if not self.CloneAnchoredPose( editingGroup, newGroup ):
 
-                self.DebugMsg( "ClonePoseAnchored failed. Original object preserved." )
+                self.DebugMsg( "CloneAnchoredPose failed. Original object preserved." )
 
             parent.replace( editingGroup, newGroup )
 
@@ -756,16 +760,9 @@ class InkRadix( inkex.EffectExtension ):
         """
         Main entry point for the InkRadix extension.
     
-        Workflow:
-            1. Ensure Windows platform.
-            2. Detect editing group.
-            3. Prepare temp SVG file.
-            4. Run RadicalPie.
-            5. Apply output back into SVG.
-    
         Raises:
             inkex.AbortExtension: For any error including RadicalPie not found, XML parsing errors, or unexpected exceptions.
-    """
+        """
 
         if sys.platform != "win32":
 
