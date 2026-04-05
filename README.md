@@ -1,4 +1,8 @@
-# InkRadix
+# <div align="center">
+<p align="center">
+  <img src="Resources/InkRadixLogo.png"/>
+</p>
+</div>
 <div align="center">
 <p align="center">
   <img src="Resources/InkRadixDemo.png"/>
