@@ -7,7 +7,7 @@
 InkRadix is an Inkscape extension that enables editable equations with Radical Pie™ (https://radicalpie.com/). Radical Pie currently supports Windows.
 
 # Installation
-There are several ways to install InkRadix:
+There are several ways to install InkRadix. First, make sure you have [Radical Pie](https://radicalpie.com) and [Inkscape](https://inkscape.org/) installed.
 
 ## Option 1: Easiest (Downloads and installs)
 If you have Windows version 10 1803 or later (very likely), you can install easily with:
@@ -46,7 +46,7 @@ The extension adds a menu entry under ```Extensions``` → ```Text``` → ```Rad
 - You can **paste LaTeX** equations into Radical Pie, and they will be formatted automatically. You can then modify them graphically.
 - If you want a **LaTeX-like appearance**, you can install the NewCM-Radix font collection (https://github.com/nasosi/NewCM-Radix
 ), which works seamlessly with Radical Pie.
-- Use the Inkscape pivot cursor to indicate the intended **alignment anchor**. InkRadix will automatically reference this pivot relative to the nearest bounding box anchor of the equation object (e.g., top-left, middle-right, etc.). A technical illustration is available in [here](https://github.com/nasosi/InkRadix/blob/main/Resources/CloneAnchoredPose.pdf).
+- Use the Inkscape pivot cursor to indicate the intended **alignment anchor**. InkRadix will automatically reference this pivot relative to the nearest bounding box anchor of the equation object (e.g., top-left, middle-right, etc.). A technical illustration of the algorithm is available [here](https://github.com/nasosi/InkRadix/blob/main/Resources/CloneAnchoredPose.pdf).
 - ```Ctrl+Alt+Shift+E``` works well as a **keyboard shortcut**. To set it up, go to ```Edit``` → ```Preferences``` → ```Interface``` → ```Keyboard```, search for ```Radical Pie```, click on ```Radical Pie Equation```, and press ```Ctrl+Alt+Shift+E``` on your keyboard.
 - Avoid ungrouping the equation object in Inkscape, as this will make it no longer editable. If this happens by accident, you can restore it using the Undo function. Occasionally, you may need to Undo and then Redo.
 - When creating a new equation, InkRadix does not automatically load the user’s default design. To apply it, after Radical Pie starts, select ```Settings``` → ```Load User Default Design``` from the Radical Pie menu.
