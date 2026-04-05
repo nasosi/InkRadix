@@ -55,7 +55,6 @@ etree.register_namespace( "inkradix", INKRADIX_NAMESPACE )
 USE_AT_OPERATOR = hasattr(inkex.Transform, "__matmul__")
 
 def DecodeNumericEntities( text ):
-
     """
     Decode numeric character references in a string to actual characters.
     
@@ -100,7 +99,6 @@ def DecodeNumericEntities( text ):
 
 
 def FileHash( path ):
-
     """
     Compute the SHA256 hash of a file.
     
@@ -127,7 +125,6 @@ def FileHash( path ):
 
 
 def ReadRegistryValue( root, subkey, valueName ):
-
     """
     Read a value from the Windows Registry.
     
@@ -159,8 +156,8 @@ def ReadRegistryValue( root, subkey, valueName ):
 
         raise RuntimeError( f"Registry access error: {e}" )
 
+
 def GetLocalBoundingBox( group ):
-    
     """
     Get the bounding box of a group ignoring its transform.
     
@@ -188,8 +185,8 @@ def GetLocalBoundingBox( group ):
         
     return bBox;
 
-def GetAnchors( bBox ):
 
+def GetAnchors( bBox ):
     """
     Return a dictionary of key anchor points for a bounding box.
     
@@ -216,7 +213,6 @@ def GetAnchors( bBox ):
 
 
 def GetNearestAnchor( point, bBox ): 
-    
     """
     Find the nearest anchor point of a bounding box to a given point.
     
@@ -236,6 +232,9 @@ def GetNearestAnchor( point, bBox ):
 
 
 class InkRadix( inkex.EffectExtension ):
+    """
+       The main extension class.
+    """
 
     def DebugMsg( self, msg):
 
@@ -245,7 +244,6 @@ class InkRadix( inkex.EffectExtension ):
 
 
     def FindRadicalPieExecutablePath( self ):
-
         """
         Locate the RadicalPie executable.
     
@@ -289,7 +287,6 @@ class InkRadix( inkex.EffectExtension ):
 
 
     def IsInkRadixElement( self, node, name ):
-
         """
         Check if an XML node is an InkRadix element with a specific local name.
     
@@ -335,7 +332,6 @@ class InkRadix( inkex.EffectExtension ):
 
 
     def FindEditingGroup( self ):
-
         """
         Find a selected group that is a RadicalPie object for editing.
     
@@ -364,7 +360,6 @@ class InkRadix( inkex.EffectExtension ):
 
 
     def ConvertXmlDataToRadicalPieComments( self, group ):
-
         """
         Convert InkRadix XML data elements into SVG comments.
     
@@ -404,7 +399,6 @@ class InkRadix( inkex.EffectExtension ):
 
 
     def ConvertRadicalPieCommentsToXMLData( self, group ):
-
         """
         Convert RadicalPie comments back into InkRadix XML elements.
     
@@ -442,7 +436,6 @@ class InkRadix( inkex.EffectExtension ):
 
 
     def WriteInputSvg( self, svgFilePath, editingGroup ):
-
         """
         Write a temporary input SVG for RadicalPie.
     
@@ -472,7 +465,6 @@ class InkRadix( inkex.EffectExtension ):
 
 
     def RunRadicalPie( self, svgFilePath ):
-
         """
         Launch RadicalPie to edit the given SVG file.
     
@@ -537,7 +529,6 @@ class InkRadix( inkex.EffectExtension ):
 
 
     def ParseOutputSvg( self, svgFilePath ):
-
         """
         Load an SVG file as an Inkex SVG document.
     
@@ -552,7 +543,6 @@ class InkRadix( inkex.EffectExtension ):
         
 
     def BuildGroupFromRoot( self, root ):
-
         """
         Build a new Inkex group from the root of an output SVG.
     
@@ -578,7 +568,6 @@ class InkRadix( inkex.EffectExtension ):
 
 
     def CloneAnchoredPose( self, oldGroup, newGroup ):
-
         """
         Copy the old group's anchored pivot pose to a new group.
     
@@ -594,7 +583,7 @@ class InkRadix( inkex.EffectExtension ):
 
             return              
         
-        # Old Pose
+        # The selected ojbect pose information
         try:
 
             oldPivotX = float(oldGroup.attrib.get(IS + "transform-center-x") or 0.0)
@@ -625,8 +614,8 @@ class InkRadix( inkex.EffectExtension ):
 
             return False
 
-        # Map old pivot into local space, express it relative to the nearest anchor,
-        # transfer that offset to the corresponding anchor in the new shape, then solve
+        # Map old pivot into local space, express it relative to the nearest local anchor,
+        # transfer that offset to the corresponding anchor in the new group, then solve
         # translation so the reconstructed pivot matches the original in global space.
         # Details in: Resources/CloneAnchoredPose.svg
         T1              = inkex.Transform( oldGroup.attrib.get( 'transform', '' ) );
@@ -662,14 +651,13 @@ class InkRadix( inkex.EffectExtension ):
 
         DeltaP2 = p1g - c2g
 
-        newGroup.set( IS + "transform-center-x", str( DeltaP2.x ) )
+        newGroup.set( IS + "transform-center-x", str(  DeltaP2.x ) )
         newGroup.set( IS + "transform-center-y", str( -DeltaP2.y ) )
         
         return True           
 
 
     def ApplyResultGroup( self, newGroup, editingGroup ):
-
         """
         Replace or append RadicalPie output into the current SVG.
     
@@ -707,7 +695,6 @@ class InkRadix( inkex.EffectExtension ):
 
 
     def PrepareTempFile( self, editingGroup ):
-
         """
         Create a temporary SVG file for RadicalPie input.
     
@@ -728,7 +715,6 @@ class InkRadix( inkex.EffectExtension ):
 
 
     def ApplyChanges( self, changed, editingGroup, svgFilePath ):
-
         """
         Apply changes from RadicalPie output back into the SVG document.
     
@@ -756,7 +742,6 @@ class InkRadix( inkex.EffectExtension ):
 
 
     def effect( self ):
-
         """
         Main entry point for the InkRadix extension.
     
