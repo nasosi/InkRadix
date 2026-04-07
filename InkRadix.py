@@ -627,14 +627,14 @@ class InkRadix( inkex.EffectExtension ):
         # The selected ojbect pose information
         try:
 
-            oldPivotX =  float(oldGroup.attrib.get(IS + "transform-center-x") or 0.0)
-            oldPivotY = -float(oldGroup.attrib.get(IS + "transform-center-y") or 0.0)
+            oldPivotX =  float(oldGroup.attrib.get( IS + "transform-center-x" ) or 0.0 )
+            oldPivotY = -float(oldGroup.attrib.get( IS + "transform-center-y" ) or 0.0 )
 
         except Exception as e:
 
             raise inkex.AbortExtension( f"Error reading transform-center-x, or transform-center-y: {e}" )
 
-        oldBBox         = oldGroup.bounding_box( )
+        oldBBox = oldGroup.bounding_box( )
         if oldBBox is None:
 
             return False
