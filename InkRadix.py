@@ -557,6 +557,12 @@ class InkRadix( inkex.EffectExtension ):
         Build a new Inkex group from the root of an output SVG,
         applying the root SVG's viewBox scaling so geometry matches
         its intended rendered size.
+        
+        Parameters:
+            root (inkex.SvgDocument): Root SVG document from RadicalPie output.
+        
+        Returns:
+            inkex.Group: New group containing output nodes with InkRadix data restored.
         """
 
         svgRoot = root.getroot( )
@@ -597,7 +603,7 @@ class InkRadix( inkex.EffectExtension ):
 
             except Exception as e:
 
-                self.DebugMsg(f"ViewBox transform failed: {e}")
+                self.DebugMsg( f"ViewBox transform failed: {e}" )
 
         return newGroup
 
