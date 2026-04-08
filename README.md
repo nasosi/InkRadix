@@ -8,8 +8,7 @@
   <img src="Resources/InkRadixDemo.png"/>
 </p>
 </div>
- (https://radicalpie.com/
-). 
+
 InkRadix is an Inkscape extension that enables editing equations using Radical Pie™ (https://radicalpie.com/). Radical Pie is currently available on Windows only.
 
 # Installation
