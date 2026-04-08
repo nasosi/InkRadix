@@ -369,7 +369,7 @@ class InkRadix( inkex.EffectExtension ):
         return None
 
 
-    def ConvertXmlDataToRadicalPieComments( self, group ):
+    def ConvertXmlDataToRadicalPieCommentBlock( self, group ):
         """
         Convert InkRadix XML data elements into SVG comments.
     
@@ -464,7 +464,7 @@ class InkRadix( inkex.EffectExtension ):
 
             groupCopy = copy.deepcopy( editingGroup )
 
-            self.ConvertXmlDataToRadicalPieComments( groupCopy )
+            self.ConvertXmlDataToRadicalPieCommentBlock( groupCopy )
 
             newSvg.append( groupCopy )
 
