@@ -39,7 +39,7 @@ If you have Windows version 10 1803 or later (very likely), you can install easi
 2. In Inkscape, select ```Extensions``` → ```Manage Extensions```
 3. In the Extensions window that appears, select the ```Install Packages``` tab.
 4. At the bottom of the window, select the folder icon.
-5. Navigate to the location where  ```InkRadix-main.zip``` was download it, select it and click ```Open``` at the bottom right of the window.
+5. Navigate to the location where  ```InkRadix-main.zip``` was downloaded in, select it and click ```Open``` at the bottom right of the window.
 6. Close the Extensions window and restart Inkscape.
 
 # Usage
