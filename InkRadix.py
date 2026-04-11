@@ -193,7 +193,7 @@ def GetLocalBoundingBox( group ):
 
         group.set( 'transform', originalTransform )
         
-    return bBox;
+    return bBox
 
 
 def GetAnchors( bBox ):
@@ -272,7 +272,7 @@ class InkRadix( inkex.EffectExtension ):
 
             exePath = ReadRegistryValue( root, subkey, valueName )
 
-        except Exception as e:
+        except Exception:
 
             self.DebugMsg(  "Warning: could not read Radical Pie executable path from registry."
                             "Trying fallbacks." )
@@ -685,7 +685,7 @@ class InkRadix( inkex.EffectExtension ):
         # translation so the reconstructed pivot matches the original in global space.
         # Details in: Resources/CloneAnchoredPose.svg
         T1              = inkex.Transform( oldGroup.attrib.get( 'transform', '' ) )
-        T1inv           = -T1;
+        T1inv           = -T1
         c1g             = inkex.Vector2d( oldBBox.center_x, oldBBox.center_y )
         DeltaP1         = inkex.Vector2d( oldPivotX, oldPivotY)
         p1g             = c1g + DeltaP1
