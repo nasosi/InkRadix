@@ -1,4 +1,4 @@
-# InkRadix v 1.0.2
+# InkRadix v 1.0.3
 # An Inkscape extension for editable Radical Pie Equations
 #
 # MIT License
@@ -692,9 +692,9 @@ class InkRadix( inkex.EffectExtension ):
         P1l             = T1inv.apply_to_point( p1g )
         anchorName, a1l = GetNearestAnchor( P1l, oldLocalBBox )
         a2l             = GetAnchors( newLocalBBox )[ anchorName ]
-        DeltaPl         = P1l - a1l
-        p2l             = DeltaPl + a2l 
-        o               = p1g - T1.apply_to_point( p2l )
+        # Below, we avoid T1*(a1l-a2l), because the inkex transform applies to a point and 
+        # not to a vector
+        o               = T1.apply_to_point( a1l ) - T1.apply_to_point( a2l ) 
 
         if USE_AT_OPERATOR:
 
@@ -704,11 +704,11 @@ class InkRadix( inkex.EffectExtension ):
 
             T2 = inkex.Transform(f"translate({o.x},{o.y})") * T1
         
-        # Ideally, we would compute: 
+        # We cannot compute
         # c2l = inkex.Vector2d( newLocalBBox.center_x, newLocalBBox.center_y )
         # c2g = T2.apply_to_point( c2l ), 
-        # but inkscape recomputes the box from the transformed geometry. This can introduce small
-        # shifts in the center. This subsequently effects the corsshair location calculation.
+        # because the aabb that results is not in general the same with the
+        # typographic bounding box. 
         newGroup.set( 'transform', str( T2 ) )  
         layer.append( newGroup )
         finalGlobalBBox = newGroup.bounding_box()
