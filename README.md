@@ -34,7 +34,7 @@ If you have Windows version 10 1803 or later (very likely), you can install easi
 4. (Re)start Inkscape to load the extension.
 ## Option 4: Manual
 1. Download the latest release **extension .zip file** [here](https://github.com/nasosi/InkRadix/releases/latest), and unzip it.
-2. Place the files ```InkRadix.inx``` and ```InkRadix.py``` in the following user directory: ```%APPDATA%\inkscape\extensions\nasos.inkradix``` You can copy and paste ``` %APPDATA%\inkscape\extensions```,  directly into the Windows File Explorer address bar. It will resolve to a folder similar to: ```C:\Users\<YourUsername>\AppData\Roaming\inkscape\extensions```. Then create a folder ```nasos.inkradix```.
+2. Place the files ```InkRadix.inx``` and ```InkRadix.py``` in the following user directory: ```%APPDATA%\inkscape\extensions\nasos.inkradix```. Note: You can copy and paste ``` %APPDATA%\inkscape\extensions```,  directly into the Windows File Explorer address bar. It will resolve to a folder similar to: ```C:\Users\<YourUsername>\AppData\Roaming\inkscape\extensions```. Then create a folder ```nasos.inkradix```.
 3. (Re)start Inkscape to load the extension.
 # Usage
 The extension adds a menu entry under ```Extensions``` → ```Text``` → ```Radical Pie Equation```.
