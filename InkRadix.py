@@ -361,6 +361,7 @@ class InkRadix( inkex.EffectExtension ):
         ]
 
         if len( radicalPieChildren ) != 1:
+
             return False
 
         radicalPieElem = radicalPieChildren[ 0 ]
@@ -379,7 +380,7 @@ class InkRadix( inkex.EffectExtension ):
     
         Returns:
             tuple[ inkex.selection, lxml.etree.Element | None ]: ( 
-                The selection if something was selected, Empty ElementList if not, and None if something went wrong 
+                The selection if something was selected, and an rmpty ElementList if not
                 The Radical Pie group element or None if no Radical Pie group is selected 
                 )
         """
