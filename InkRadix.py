@@ -45,7 +45,7 @@ import inkex
 from lxml import etree
 
 
-DEBUG = False
+DEBUG = True
 
 
 SVG_DEFAULT_CONTENT   = """<svg width="6pt" height="9pt" viewBox="0 -9 6 9" version="1.1" xmlns="http://www.w3.org/2000/svg"><desc>Radical Pie Equation</desc><!--D{} Gr { Bg {}}--></svg>"""
@@ -627,6 +627,9 @@ class InkRadix( inkex.EffectExtension ):
                 widthInDocumentUnits  = self.svg.unittouu( widthStr )
                 heightInDocumentUnits = self.svg.unittouu( heightStr )
 
+                self.msg( vbW )
+                self.msg( widthStr )
+
                 if vbW != 0 and vbH != 0:
 
                     scaleX = widthInDocumentUnits / vbW
@@ -637,6 +640,15 @@ class InkRadix( inkex.EffectExtension ):
                     T.add_scale( scaleX, scaleY )
 
                     newGroup.set( "transform", str( T ) )
+
+                    # Create a line from (0,0) to (width,0), transformed by T
+                    line = inkex.Line()
+                    line.set('x1', vbX )
+                    line.set('y1', 0)
+                    line.set('x2', str( vbX + vbW ) )
+                    line.set('y2', 0)
+                    line.set('style', 'stroke:#000000;stroke-width:0.05')
+                    newGroup.append(line)
 
                     # We are not using the following, but if Inkscape or Radical Pie ever change units,
                     # we will be able to support documents saved in older versions
