@@ -43,7 +43,7 @@ import subprocess
 import inkex
 
 from lxml import etree
-
+from math import isclose
 
 DEBUG = True
 
@@ -238,6 +238,8 @@ def GetAnchors( bBox ):
                             middle-right, bottom-left, bottom-center, bottom-right
     """
 
+    baseline_y = 0;
+
     return {
         "top-left":      inkex.Vector2d( bBox.left,     bBox.top ),
         "top-center":    inkex.Vector2d( bBox.center_x, bBox.top ),
@@ -247,7 +249,11 @@ def GetAnchors( bBox ):
         "middle-right":  inkex.Vector2d( bBox.right,    bBox.center_y ),
         "bottom-left":   inkex.Vector2d( bBox.left,     bBox.bottom ),
         "bottom-center": inkex.Vector2d( bBox.center_x, bBox.bottom ),
-        "bottom-right":  inkex.Vector2d( bBox.right,    bBox.bottom )
+        "bottom-right":  inkex.Vector2d( bBox.right,    bBox.bottom ),
+
+        "baseline-left":   inkex.Vector2d(bBox.left,     baseline_y ),
+        "baseline-center": inkex.Vector2d(bBox.center_x, baseline_y ),
+        "baseline-right":  inkex.Vector2d(bBox.right,    baseline_y ),
     }
 
 
@@ -373,6 +379,16 @@ class InkRadix( inkex.EffectExtension ):
 
         return len( dataV1Children ) == 1
 
+
+    def GetInkRadixValue( self, group, tagName ):
+
+        for node in group.iter( ):
+
+            if self.IsInkRadixElement( node, tagName ):
+
+                return node.text
+
+        return None
 
     def GetSelectionAndEditingGroup( self ):
         """
@@ -658,7 +674,12 @@ class InkRadix( inkex.EffectExtension ):
                     newGroup.set( "transform", str( T ) )
 
                     # Move pivot to the baseline
-                    newGroup.set( IS + "transform-center-y", str( scaleY * oldLocalBBox.center_y ) )
+                    # Note: Trying to have the Pivot at the baseline introduces many other user interface issues
+                    # like for example, moving the pivot off the baseline if the user adds a fraction, or the
+                    # user changes font size, and it is likely not worth dealing with. Leaving this commit in case I decide
+                    # to implement it in the future.
+                    pivotToBaseline = str( scaleY * oldLocalBBox.center_y );
+                    newGroup.set( IS + "transform-center-y", pivotToBaseline )
 
                     # We are not using the following, but if Inkscape or Radical Pie ever change units,
                     # we will be able to support documents saved in older versions
@@ -667,10 +688,12 @@ class InkRadix( inkex.EffectExtension ):
                         vbElem = etree.SubElement( rpElem, IR + "rPieViewBox")
                         wElem  = etree.SubElement( rpElem, IR + "rPieWidth")
                         hElem  = etree.SubElement( rpElem, IR + "rPieHeight" )
+                        pElem  = etree.SubElement( rpElem, IR + "rPiePivotToBaseline" )
 
                         vbElem.text = viewBoxStr
                         wElem.text = widthStr
                         hElem.text = heightStr
+                        pElem.text = pivotToBaseline
 
             except Exception as e:
 
@@ -753,6 +776,25 @@ class InkRadix( inkex.EffectExtension ):
         except Exception as e:
 
             raise inkex.AbortExtension( f"Error reading transform-center-x, or transform-center-y: {e}" )
+
+        try:
+            val = self.GetInkRadixValue( oldGroup, "rPiePivotToBaseline" )
+
+            oldPivotToBaseLine = -float( val ) 
+
+            self.msg(oldPivotY)
+            self.msg(oldPivotToBaseLine)
+            self.msg( oldPivotToBaseLine - oldPivotY)
+
+            userHasMovedThePivot = not ( isclose( 0, oldPivotX, abs_tol = 1.0e-3) or isclose( oldPivotToBaseLine, oldPivotY, abs_tol = 1.0e-3 ) )
+            self.msg( f"user has moved the pivot: {userHasMovedThePivot}" )
+
+        except Exception as e:
+
+            self.DebugMsg( f"Reading rPiePivotToBaseline failed: {e}")
+
+            pass
+
 
         oldBBox = oldGroup.bounding_box( )
         if oldBBox is None:
