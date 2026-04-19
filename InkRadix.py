@@ -623,12 +623,28 @@ class InkRadix( inkex.EffectExtension ):
 
                     raise ValueError( f"Invalid viewBox format: {viewBoxStr}" )
 
+                # Baseline
+                line = inkex.Line()
+                line.set('x1', vbX )
+                line.set('y1', 0 )
+                line.set('x2', str( vbX + vbW ) )
+                line.set('y2', 0 )
 
+                if DEBUG:
+
+                    line.set('style', 'stroke:#000000;stroke-width:0.05')
+                    
+                else:
+
+                    line.set('style', 'stroke:#000000;stroke-width:0.05;stroke-opacity:0')
+
+                newGroup.insert( 0, line )
+
+                oldLocalBBox    = GetLocalBoundingBox( newGroup )
+
+                # Transform to document frame
                 widthInDocumentUnits  = self.svg.unittouu( widthStr )
                 heightInDocumentUnits = self.svg.unittouu( heightStr )
-
-                self.msg( vbW )
-                self.msg( widthStr )
 
                 if vbW != 0 and vbH != 0:
 
@@ -641,14 +657,8 @@ class InkRadix( inkex.EffectExtension ):
 
                     newGroup.set( "transform", str( T ) )
 
-                    # Create a line from (0,0) to (width,0), transformed by T
-                    line = inkex.Line()
-                    line.set('x1', vbX )
-                    line.set('y1', 0)
-                    line.set('x2', str( vbX + vbW ) )
-                    line.set('y2', 0)
-                    line.set('style', 'stroke:#000000;stroke-width:0.05')
-                    newGroup.append(line)
+                    # Move pivot to the baseline
+                    newGroup.set( IS + "transform-center-y", str( scaleY * oldLocalBBox.center_y ) )
 
                     # We are not using the following, but if Inkscape or Radical Pie ever change units,
                     # we will be able to support documents saved in older versions
@@ -737,8 +747,8 @@ class InkRadix( inkex.EffectExtension ):
         
         try:
 
-            oldPivotX =  float(oldGroup.attrib.get( IS + "transform-center-x" ) or 0.0 )
-            oldPivotY = -float(oldGroup.attrib.get( IS + "transform-center-y" ) or 0.0 )
+            oldPivotX =  float( oldGroup.attrib.get( IS + "transform-center-x" ) or 0.0 )
+            oldPivotY = -float( oldGroup.attrib.get( IS + "transform-center-y" ) or 0.0 )
 
         except Exception as e:
 
