@@ -1,0 +1,32 @@
+<inkscape-extension>
+
+    <name>Toggle Baseline Visibility</name>
+    <id>nasos.inkradix.toggleBL</id>
+
+    <param name="action" type="string" gui-hidden="true">toggleBaseline</param>
+    
+    <effect>
+
+        <object-type>all</object-type>
+
+        <effects-menu>
+
+            <submenu name="Text">
+
+                <submenu name="Radical Pie Equation"/>
+
+            </submenu>
+
+        </effects-menu>
+
+    </effect>
+
+    <menu-tip>Open Radical Pie Equation editor for selected objects</menu-tip>
+
+    <script>
+
+        <command location="inx" interpreter="python">InkRadix.py</command>
+
+    </script>
+
+</inkscape-extension>
