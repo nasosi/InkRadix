@@ -19,7 +19,7 @@ if not exist "%TARGET_DIR%" (
 
 cd ..
 
-set FILES=InkRadix.inx InkRadix.py info.json LICENSE README.md
+set FILES=InkRadixEdit.inx InkRadixToggleBL.inx InkRadix.py info.json LICENSE README.md
 
 for %%F in (%FILES%) do (
     if exist "%TARGET_DIR%\%%F" set "WARNED=1"
