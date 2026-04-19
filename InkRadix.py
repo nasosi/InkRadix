@@ -1,4 +1,4 @@
-# InkRadix v 1.1.0
+# InkRadix v 1.2.0
 # An Inkscape extension for editable Radical Pie Equations
 #
 # MIT License
