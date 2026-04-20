@@ -1,6 +1,6 @@
 <inkscape-extension>
 
-    <name>Toggle Baseline Visibility</name>
+    <name>Toggle Baseline</name>
     <id>nasos.inkradix.toggleBL</id>
 
     <param name="action" type="string" gui-hidden="true">toggleBaseline</param>
