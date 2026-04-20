@@ -28,7 +28,7 @@ set "ZIP_FILE=%USERPROFILE%\Documents\InkRadix-%VERSION%.zip"
 if exist "%ZIP_FILE%" del "%ZIP_FILE%"
 
 echo Creating zip: %ZIP_FILE%
-zip.exe -q "%ZIP_FILE%" InkRadix.inx InkRadix.py info.json LICENSE README.md
+zip.exe -q "%ZIP_FILE%" InkRadixEdit.inx InkRadixToggleBL.inx InkRadix.py info.json LICENSE README.md
 
 cd "%CUR_DIR%"
 echo Zip created at: %ZIP_FILE%

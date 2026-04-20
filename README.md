@@ -37,12 +37,13 @@ If you have Windows version 10 1803 or later (very likely), you can install easi
 2. Place the files ```InkRadix.inx``` and ```InkRadix.py``` in the following user directory: ```%APPDATA%\inkscape\extensions\nasos.inkradix```. Note: You can copy and paste ``` %APPDATA%\inkscape\extensions```,  directly into the Windows File Explorer address bar. It will resolve to a folder similar to: ```C:\Users\<YourUsername>\AppData\Roaming\inkscape\extensions```. Then create a folder ```nasos.inkradix```.
 3. (Re)start Inkscape to load the extension.
 # Usage
-The extension adds a menu entry under ```Extensions``` → ```Text``` → ```Radical Pie Equation```.
+The extension adds a submenu under ```Extensions``` → ```Text``` → ```Radical Pie Equation```.
 
-- **Adding a new equation**: If no objects are selected, the extension will launch Radical Pie. After closing and saving, a new equation will be inserted into Inkscape.
+- **Adding a new equation**: If no objects are selected, the ```Create / Edit``` command will launch Radical Pie. After closing and saving, a new equation will be inserted into Inkscape.
 - **Editing an existing equation**: If an existing Radical Pie equation is selected, running the command will open it for editing. After closing and saving, the selected object will be updated with the modified content.
 - If you select multiple equations and run the extension command, only the first equation will be edited.
-- If you select one, or more objects that are not equations, and run the extension command, the newly created equation will be placed at the center of the axis-aligned bounding box of the selected objects.
+- If you select one, or more objects that are not equations, and run the ```Create / Edit``` command, the newly created equation will be placed at the center of the axis-aligned bounding box of the selected objects.
+- If you have selected one or more equations and run the ```Toggle baseline``` command, the equation **baseline** will be toggled on or off.
 - You can **paste LaTeX** equations into Radical Pie, and they will be formatted automatically. You can then modify them graphically.
 - If you want a **LaTeX-like appearance**, you can install the NewCM-Radix font collection (https://github.com/nasosi/NewCM-Radix
 ), which works seamlessly with Radical Pie.
@@ -52,10 +53,13 @@ The extension adds a menu entry under ```Extensions``` → ```Text``` → ```Rad
 - When creating a new equation, InkRadix does not automatically load the user’s default design. To apply it, after Radical Pie starts, select ```Settings``` → ```Load User Default Design``` from the Radical Pie menu.
 ## Usage GIFs
 ## Creating a new equation
-![newEquation](https://github.com/user-attachments/assets/ff605bd7-84b9-43ab-8975-7f3dd80749ec)
+![newEquation](Resources/UsageSnippets/newEquation.gif)
 ## Editing an existing equation
-![editEquation](https://github.com/user-attachments/assets/e76a5205-2c03-48cb-9e20-28a51f8f978b)
+![editEquation](Resources/UsageSnippets/editEquation.gif)
 ## Using the Inkscape pivot cursor for alignment
-![anchors](https://github.com/user-attachments/assets/7ee83ca8-7c68-4c41-9aaa-8189c9418a92)
+![anchors](Resources/UsageSnippets/anchors.gif)
+## Using the baseline for typesetting
+![baselineUse](Resources/UsageSnippets/baselineUse.gif)
+
 # Supported versions
 InkRadix has been tested to work with Radical Pie versions 1.8 and 1.9, and Inkscape versions 1.0 through 1.4.

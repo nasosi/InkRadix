@@ -1,15 +1,21 @@
 <inkscape-extension>
 
-  <name>Radical Pie Equation</name>
-  <id>nasos.inkradix</id>
+  <name>Create / Edit</name>
+  <id>nasos.inkradix.edit</id>
 
+   <param name="action" type="string" gui-hidden="true">edit</param>
+    
   <effect>
   
-    <object-type> all </object-type>
+    <object-type>all</object-type>
     
     <effects-menu>
-    
-      <submenu name="Text"/>
+
+        <submenu name="Text">
+            
+            <submenu name="Radical Pie Equation"/>
+            
+        </submenu>
       
     </effects-menu>
     

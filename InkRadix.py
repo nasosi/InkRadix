@@ -1,4 +1,4 @@
-# InkRadix v 1.1.0
+# InkRadix v 1.2.0
 # An Inkscape extension for editable Radical Pie Equations
 #
 # MIT License
@@ -177,6 +177,17 @@ def ReadRegistryValue( root, subkey, valueName ):
         raise RuntimeError( f"Registry access error: {e}" )
 
 
+def GetActionArgument( ):
+
+    for arg in sys.argv:
+
+        if arg.startswith("--action="):
+
+            return arg.split("=", 1)[1]
+
+    return None
+
+
 def GetLocalBoundingBox( group ):
     """
     Get the bounding box of a group ignoring its transform.
@@ -205,6 +216,7 @@ def GetLocalBoundingBox( group ):
         
     return bBox
 
+
 def SelectionIterable( selection ):
     """
     Get an iterable object from a selection to support multiple versions of inkex
@@ -216,13 +228,13 @@ def SelectionIterable( selection ):
 
     if selection is None:
 
-        return []
+        return [ ]
 
     if hasattr( selection, "values" ):
 
-        return selection.values()
+        selection = selection.values()
 
-    return selection
+    return list( selection )
 
 
 def GetAnchors( bBox ):
@@ -238,6 +250,8 @@ def GetAnchors( bBox ):
                             middle-right, bottom-left, bottom-center, bottom-right
     """
 
+    baseline_y = 0;
+
     return {
         "top-left":      inkex.Vector2d( bBox.left,     bBox.top ),
         "top-center":    inkex.Vector2d( bBox.center_x, bBox.top ),
@@ -247,7 +261,11 @@ def GetAnchors( bBox ):
         "middle-right":  inkex.Vector2d( bBox.right,    bBox.center_y ),
         "bottom-left":   inkex.Vector2d( bBox.left,     bBox.bottom ),
         "bottom-center": inkex.Vector2d( bBox.center_x, bBox.bottom ),
-        "bottom-right":  inkex.Vector2d( bBox.right,    bBox.bottom )
+        "bottom-right":  inkex.Vector2d( bBox.right,    bBox.bottom ),
+
+        "baseline-left":   inkex.Vector2d(bBox.left,     baseline_y ),
+        "baseline-center": inkex.Vector2d(bBox.center_x, baseline_y ),
+        "baseline-right":  inkex.Vector2d(bBox.right,    baseline_y ),
     }
 
 
@@ -346,7 +364,7 @@ class InkRadix( inkex.EffectExtension ):
         return qname.localname == name and qname.namespace == INKRADIX_NAMESPACE
 
 
-    def IsRadicalPieObject( self, group ):
+    def IsInkRadixGroup( self, group ):
         """
         Return True if the group contains exactly one <inkradix:radicalpie>
         element, which itself contains exactly one <inkradix:datav1> element.
@@ -374,28 +392,132 @@ class InkRadix( inkex.EffectExtension ):
         return len( dataV1Children ) == 1
 
 
-    def GetSelectionAndEditingGroup( self ):
+    def GetFirstEditingGroup( self, selection ):
         """
-        Find a selected group that is a RadicalPie object for editing.
+        Find the first selected InkRadix group for editing.
     
         Returns:
-            tuple[ inkex.selection, lxml.etree.Element | None ]: ( 
-                The selection if something was selected, and an rmpty ElementList if not
-                The Radical Pie group element or None if no Radical Pie group is selected 
-                )
+            lxml.etree.Element | None : The InkRadix group element or None if no InkRadix group is selected 
         """
+        for elem in selection:
 
-        selection = getattr( self.svg, "selection", getattr( self.svg, "selected", { } ) ) # To support older versions
-
-        for elem in SelectionIterable( selection ):
-
-            if self.IsRadicalPieObject( elem ):
+            if self.IsInkRadixGroup( elem ):
 
                 self.DebugMsg( "Editing existing RadicalPie group" )
 
-                return selection, elem
+                return elem
             
-        return selection, None
+        return None
+
+
+    def FindBaseLine( self, group ):
+        """
+        Finds the InkRadix baseline inside the group.
+    
+        Parameters:
+            group: The inkradix group or None.
+
+        Returns:
+            node | None : The baseline element or None if no baseline exists 
+        """
+
+        if group is None:
+
+            return None
+
+        for node in group.iter( ):
+
+            if isinstance( node.tag, str ) and node.get( IR + "tag" ) == "baseline":
+
+                return node
+
+        return None
+
+
+    def SetBaseline( self, group, x, width ):
+        """
+        Sets the InkRadix baseline inside the group with local coordinates (x,0) to (x+width,0).
+    
+        Parameters:
+            group: The inkradix group or None.
+            x: the starting x coordinate
+            width: the width of the baseline
+        """
+
+        if group is None:
+
+            return
+
+        baseLine = self.FindBaseLine( group )
+
+        if baseLine is not None:
+
+            group.remove( baseLine )
+
+        line = inkex.Line( )
+        line.set( 'x1', str( x ) )
+        line.set( 'y1', "0" )
+        line.set( 'x2', str( x + width ) )
+        line.set( 'y2', "0" )
+        line.set( IR + "tag", "baseline" )
+        line.set( "stroke", "#000000")
+        line.set( "stroke-width", "0.05")
+        line.set( "opacity", "1.0" )
+
+        group.insert( 0, line )
+
+
+    def ToggleBaselines( self, selection ):
+        """
+        Add or remove baseline line element to all InkRadix groups.
+    
+        Parameters:
+            selection: The selected objects
+        """
+
+        failCount = 0
+
+        for elem in selection:
+
+            if not self.IsInkRadixGroup( elem ):
+
+                continue
+
+            baseLine = self.FindBaseLine( elem )
+
+            if baseLine is not None:
+
+                elem.remove( baseLine )
+
+            else:
+            
+                vbElem = elem.find(".//" + IR + "rPieViewBox")
+                if vbElem is None:
+
+                    failCount = failCount + 1
+                    continue
+
+                viewBoxStr = vbElem.text
+                if not viewBoxStr:
+
+                    failCount += 1
+                    continue
+
+                viewBoxElements = re.split(r"[,\s]+", viewBoxStr.strip())
+
+                try:
+
+                    vbX, vbY, vbW, vbH = map( float, viewBoxElements )
+
+                except Exception:
+
+                    raise inkex.AbortExtension(f"Invalid viewBox format: {viewBoxStr}")
+
+                self.SetBaseline( elem, vbX, vbW )
+        
+        if failCount > 0:
+
+            self.msg( f"InkRadix: {failCount} InkRadix group(s) did not have a viewbox defined. Maybe it/they were created with a previous version." )
 
 
     def ConvertXmlDataToRadicalPieCommentBlock( self, group ):
@@ -580,7 +702,7 @@ class InkRadix( inkex.EffectExtension ):
         return inkex.load_svg( svgFilePath ) 
         
 
-    def BuildGroupFromRoot( self, root ):
+    def BuildGroupFromRoot( self, root, withBaseline ):
         """
         Build a new Inkex group from the root of an output SVG,
         applying the root SVG's viewBox scaling so geometry matches
@@ -614,6 +736,18 @@ class InkRadix( inkex.EffectExtension ):
 
             try:
 
+                # We are not using the following, but if Inkscape or Radical Pie ever change units,
+                # we will be able to support documents saved in older versions
+                if rpElem is not None:
+
+                    vbElem = etree.SubElement( rpElem, IR + "rPieViewBox")
+                    wElem  = etree.SubElement( rpElem, IR + "rPieWidth")
+                    hElem  = etree.SubElement( rpElem, IR + "rPieHeight" )
+
+                    vbElem.text = viewBoxStr
+                    wElem.text = widthStr
+                    hElem.text = heightStr
+
                 viewBoxElements = re.split(r"[,\s]+", viewBoxStr.strip())
 
                 try:
@@ -621,11 +755,15 @@ class InkRadix( inkex.EffectExtension ):
 
                 except Exception:
 
-                    raise ValueError( f"Invalid viewBox format: {viewBoxStr}" )
+                    raise inkex.AbortExtension(f"Invalid viewBox format: {viewBoxStr}")
 
-
+                # Transform to document frame
                 widthInDocumentUnits  = self.svg.unittouu( widthStr )
                 heightInDocumentUnits = self.svg.unittouu( heightStr )
+
+                if withBaseline:
+
+                    self.SetBaseline( newGroup, vbX, vbW )
 
                 if vbW != 0 and vbH != 0:
 
@@ -638,17 +776,6 @@ class InkRadix( inkex.EffectExtension ):
 
                     newGroup.set( "transform", str( T ) )
 
-                    # We are not using the following, but if Inkscape or Radical Pie ever change units,
-                    # we will be able to support documents saved in older versions
-                    if rpElem is not None:
-
-                        vbElem = etree.SubElement( rpElem, IR + "rPieViewBox")
-                        wElem  = etree.SubElement( rpElem, IR + "rPieWidth")
-                        hElem  = etree.SubElement( rpElem, IR + "rPieHeight" )
-
-                        vbElem.text = viewBoxStr
-                        wElem.text = widthStr
-                        hElem.text = heightStr
 
             except Exception as e:
 
@@ -725,8 +852,8 @@ class InkRadix( inkex.EffectExtension ):
         
         try:
 
-            oldPivotX =  float(oldGroup.attrib.get( IS + "transform-center-x" ) or 0.0 )
-            oldPivotY = -float(oldGroup.attrib.get( IS + "transform-center-y" ) or 0.0 )
+            oldPivotX =  float( oldGroup.attrib.get( IS + "transform-center-x" ) or 0.0 )
+            oldPivotY = -float( oldGroup.attrib.get( IS + "transform-center-y" ) or 0.0 )
 
         except Exception as e:
 
@@ -757,7 +884,7 @@ class InkRadix( inkex.EffectExtension ):
 
             return False
 
-        # Map old pivot into local space, fint the nearest local anchor of the old equation, find the corresponding 
+        # Map old pivot into local space, find the nearest local anchor of the old equation, find the corresponding 
         # anchor in the new group, then solve translation so the new group's anchor matches the original in global 
         # space. Details in: Resources/CloneAnchoredPose.svg
         T1              = inkex.Transform( oldGroup.attrib.get( 'transform', '' ) )
@@ -819,7 +946,7 @@ class InkRadix( inkex.EffectExtension ):
         if not self.CloneAnchoredPose( editingGroup, newGroup ):
 
             self.DebugMsg( "CloneAnchoredPose failed. Original object preserved." )
-
+           
         parent.replace( editingGroup, newGroup )
 
         self.DebugMsg( "Selection replaced with updated RadicalPie SVG." )
@@ -868,9 +995,16 @@ class InkRadix( inkex.EffectExtension ):
             self.DebugMsg( "Output SVG is empty. Original preserved." )
             return
 
-        newGroup = self.BuildGroupFromRoot( root )
+        withBaseline = ( editingGroup is not None ) and ( self.FindBaseLine( editingGroup ) is not None )
+        newGroup     = self.BuildGroupFromRoot( root, withBaseline )
 
         self.ApplyResultGroup( selection, newGroup, editingGroup )
+
+
+    def add_arguments(self, pars):
+
+        pars.add_argument( '--action', type=str, default='edit' )
+
 
     def effect( self ):
         """
@@ -881,11 +1015,21 @@ class InkRadix( inkex.EffectExtension ):
         """
         svgFilePath = None
 
+        self.DebugMsg( f"Action: {self.options.action}" )
+
         try:
 
-            selection, editingGroup = self.GetSelectionAndEditingGroup( )
-            svgFilePath             = self.PrepareTempFile( editingGroup )
-            svgFileChanged          = self.RunRadicalPie( svgFilePath )
+            selection = SelectionIterable( getattr( self.svg, "selection", getattr( self.svg, "selected", { } ) ) ) # This also supports older Inkscape versions 
+
+            if self.options.action == "toggleBaseline":
+
+                self.ToggleBaselines( selection )
+
+                return
+
+            editingGroup    = self.GetFirstEditingGroup( selection )
+            svgFilePath     = self.PrepareTempFile( editingGroup )
+            svgFileChanged  = self.RunRadicalPie( svgFilePath )
 
             self.ApplyChanges( selection, svgFileChanged, editingGroup, svgFilePath )
 
