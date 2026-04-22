@@ -1,7 +1,7 @@
 <inkscape-extension>
 
   <name>Create / Edit</name>
-  <id>nasos.inkradix.edit</id>
+  <id>nasos.inkradix</id>
 
    <param name="action" type="string" gui-hidden="true">edit</param>
     
