@@ -40,8 +40,8 @@ If you have Windows version 10 1803 or later (very likely), you can install easi
 The extension adds a submenu under ```Extensions``` → ```Text``` → ```Radical Pie Equation```, with two commands: ```Create / Edit``` and ```Toggle Baseline```.
 
 - **Adding a new equation**: If no objects are selected, the ```Create / Edit``` command will launch Radical Pie. After closing and saving, a new equation will be inserted into Inkscape.
-- **Editing an existing equation**: If an existing Radical Pie equation is selected, running the ```Create / Edit`` command will open the equation for editing. After closing and saving, the selected object will be updated with the modified content.
-- If you select multiple equations and run the ```Create / Edit`` command, only the first equation will be edited.
+- **Editing an existing equation**: If an existing Radical Pie equation is selected, running the ```Create / Edit``` command will open the equation for editing. After closing and saving, the selected object will be updated with the modified content.
+- If you select multiple equations and run the ```Create / Edit``` command, only the first equation will be edited.
 - If you select one, or more objects that are not equations, and run the ```Create / Edit``` command, the newly created equation will be placed at the center of the axis-aligned bounding box of the selected objects.
 - If you have selected one or more equations and run the ```Toggle baseline``` command, the equation **baseline** will be toggled on or off.
 - You can **paste LaTeX** equations into Radical Pie, and they will be formatted automatically. You can then modify them graphically.
@@ -49,7 +49,7 @@ The extension adds a submenu under ```Extensions``` → ```Text``` → ```Radica
 ), which works seamlessly with Radical Pie.
 - Use the Inkscape pivot cursor to indicate the intended **alignment anchor**. InkRadix will automatically reference this pivot relative to the nearest bounding box anchor of the equation object (e.g., top-left, middle-right, etc.). A technical illustration of the algorithm is available [here](https://github.com/nasosi/InkRadix/blob/main/Resources/CloneAnchoredPose.pdf).
 - ```Ctrl+Alt+Shift+E``` works well as a **keyboard shortcut** for creating/editing equations. To set it up, go to ```Edit``` → ```Preferences``` → ```Interface``` → ```Keyboard```, search for ```Create / Edit```, click on ``Create / Edit```, and press ```Ctrl+Alt+Shift+E``` on your keyboard.
-- - ```Ctrl+Alt+Shift+B``` works well as a **keyboard shortcut** for toggling the baseline. To set it up, go to ```Edit``` → ```Preferences``` → ```Interface``` → ```Keyboard```, search for ``Toggle Baseline```, click on ```Toggle Baseline```, and press ```Ctrl+Alt+Shift+B``` on your keyboard.
+- ```Ctrl+Alt+Shift+B``` works well as a **keyboard shortcut** for toggling the baseline. To set it up, go to ```Edit``` → ```Preferences``` → ```Interface``` → ```Keyboard```, search for ``Toggle Baseline```, click on ```Toggle Baseline```, and press ```Ctrl+Alt+Shift+B``` on your keyboard.
 - Avoid ungrouping the equation object in Inkscape, as this will make it no longer editable. If this happens by accident, you can restore it using the Undo function. Occasionally, you may need to Undo and then Redo.
 - When creating a new equation, InkRadix does not automatically load the user’s default design. To apply it, after Radical Pie starts, select ```Settings``` → ```Load User Default Design``` from the Radical Pie menu.
 ## Usage GIFs
